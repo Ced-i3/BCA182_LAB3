@@ -102,10 +102,15 @@ the reconstruction obtains third-party sources from their own repositories.
 Keep all upstream license files and notices in reconstructed sources. The
 audited RT-Thread, CMSIS-Core, STM32F4 CMSIS, and ICM20608 repositories carry
 Apache-2.0 licenses; the STM32F4 HAL package carries BSD-3-Clause terms.
-RW007 has an Apache-2.0 repository license, but its `SConscript` contains a
-GPLv3 annotation from its build-package generator. File-level obligations
-must be resolved before bundling RW007 source. lwIP source contains its own
-BSD-style headers; do not replace or remove them.
+The pinned RW007 repository `LICENSE` and Chinese README identify the package
+as Apache-2.0, and `src/spi_wifi_rw007.c` carries an Apache-2.0 SPDX header.
+The two project patches add prominent changed-file notices to
+`example/rw007_stm32_port.c` and `src/spi_wifi_rw007.c`; the latter keeps its
+upstream Real-Thread copyright and SPDX header. The separate `SConscript`
+contains a GPLv3 annotation, but no inspected upstream text says it applies to
+either patched C file. Its intended wider scope remains unconfirmed. See the
+[third-party notices](../../THIRD_PARTY_NOTICES.md) for evidence and limits.
+lwIP source contains its own BSD-style headers; do not replace or remove them.
 
 The original working tree also contains a third-party ICM20608 datasheet PDF.
 It is **not** included here because redistribution rights are unverified.

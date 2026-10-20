@@ -1,6 +1,14 @@
 --- a/example/rw007_stm32_port.c
 +++ b/example/rw007_stm32_port.c
-@@ -92,8 +92,10 @@
+@@ -1,1 +1,7 @@
++/*
++ * Modified for the BCA182_LAB3 RT-Spark activity-recognition project:
++ * adds a bounded RW007 startup wait and propagates SPI/Wi-Fi initialization
++ * and query errors. Original upstream copyright and Apache-2.0 license
++ * notices remain applicable.
++ */
+ #include <rtthread.h>
+@@ -92,8 +98,10 @@
  MSH_CMD_EXPORT(wifi_powerswitch, "wifi power switch");
  #endif /*RW007_USING_POWERSWITCH_EXAMPLE*/
  
@@ -13,7 +21,7 @@
      // /* Configure IO */
      rt_pin_mode(RW007_RST_PIN, PIN_MODE_OUTPUT);
      rt_pin_mode(RW007_INT_BUSY_PIN, PIN_MODE_INPUT_PULLDOWN);
-@@ -110,8 +112,14 @@
+@@ -110,8 +118,14 @@
      rt_pin_write(RW007_RST_PIN, PIN_HIGH);
  
      /* Wait rw007 ready(exit busy stat) */
@@ -28,7 +36,7 @@
          rt_thread_delay(5);
      }
  
-@@ -121,34 +129,66 @@
+@@ -121,34 +135,66 @@
  #ifdef RW007_USING_POWERSWITCH_EXAMPLE
      rw007_register_powerswitch_cb(_wifi_pwr_down, _wifi_pwr_on);
  #endif // RW007_USING_POWERSWITCH_EXAMPLE

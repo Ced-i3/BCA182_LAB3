@@ -480,18 +480,21 @@ work, subject to suitable access, security, and resources.
 ## Credits and third-party licenses
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the pinned firmware
-components, inspected upstream license files, attribution requirements, and
-unresolved RW007 licensing question.
+components, inspected upstream licenses, attribution conditions, RW007 patch
+notices, and the remaining question about the SConscript annotation’s scope.
 
-The proposed public source package contains patches and overlays, while its
-manifest fetches the upstream RT-Thread and driver repositories at pinned
+The firmware source package distributes project patches and overlays; its
+manifest fetches upstream RT-Thread and driver repositories at pinned
 commits. Preserve their license and copyright notices. RT-Thread,
-CMSIS-Core, STM32F4 CMSIS, and the ICM20608 package have Apache-2.0 license
-files; the STM32F4 HAL package has BSD-3-Clause terms. RW007 has an
-Apache-2.0 repository license, but its `SConscript` carries a separate GPLv3
-annotation. lwIP sources contain BSD-style file notices. Review the
-file-level licensing details in the firmware reconstruction guide before
-redistributing bundled vendor source.
+CMSIS-Core, STM32F4 CMSIS, ICM20608, and the two patched RW007 C files have
+Apache-2.0 evidence; the STM32F4 HAL package has BSD-3-Clause terms, and lwIP
+sources contain BSD-style file notices. The RW007 patches now embed prominent
+changed-file notices, while preserving the driver’s Real-Thread copyright and
+SPDX header. The separate RW007 `SConscript` GPLv3 annotation is not targeted
+by either patch; no inspected upstream text extends it to those C files, and
+its intended wider scope remains unconfirmed. See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) before distributing the
+patch package or a reconstructed vendor-source tree.
 
 The Run-or-Walk dataset was obtained from Kaggle. Its CSV redistribution
 license is not recorded here, so the proposed public staging set excludes the
