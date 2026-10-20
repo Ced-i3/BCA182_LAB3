@@ -75,6 +75,45 @@ All predictions are experimental. The walking/running Decision Tree was trained 
 - **PowerShell refuses `npm`:** use `npm.cmd` as shown above.
 - **npm reports `ENOTCACHED` or a refused `127.0.0.1:9` proxy:** this terminal may have process-level offline or proxy settings. Check your network access, then override only that PowerShell session if appropriate; do not change global npm or Windows security settings. For example, `$env:NPM_CONFIG_OFFLINE='false'` disables npm's offline mode for the current terminal.
 
-## Future deployment
+## Vercel frontend deployment
 
-This Next.js app can build for a Node/Vercel deployment, but Vercel cannot reach Flask at `127.0.0.1` on the laptop. A future deployment needs a separately designed secure connection to a reachable backend, such as a hosted authenticated API or controlled private relay. Do not publish Flask or MQTT directly to the internet. When a production backend URL is absent, the dashboard shows an unavailable state rather than attempting to reach the laptop.
+Vercel is intended to host this Next.js frontend only. The Flask API, MQTT
+broker, classifier, and SQLite database stay on the laptop. A Vercel function
+cannot reach the laptop through `127.0.0.1`, so a deployed page without a
+separately designed and secured backend will load but show the backend as
+disconnected and have no live laptop data. This frontend-only deployment does
+not satisfy the laboratory guide's cloud-backend requirement; see the root
+README's deployment limitations.
+
+These are preparation instructions only. Do not publish the repository or
+create a Vercel deployment until those actions are separately approved.
+
+After publication is approved, import the repository into Vercel and use these
+project settings:
+
+1. Set **Root Directory** to `web/`, because the Next.js app and its lockfile
+   are in that directory. See [Vercel's monorepo root-directory guide](https://vercel.com/docs/monorepos).
+2. Select the detected **Next.js** framework preset and use Node.js **24.x**
+   to match the verified local environment. Vercel currently supports 24.x;
+   see [supported Node.js versions](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions).
+3. Keep the detected install, build, and output settings. The package has a
+   lockfile and a `build` script (`next build`); Vercel detects the Next.js
+   defaults. No custom output directory or `vercel.json` is required. See
+   [Vercel build configuration](https://vercel.com/docs/builds/configure-a-build).
+4. Do not set `BACKEND_URL` for the current frontend-only deployment. In
+   production, the proxy returns HTTP 503 when this variable is absent, and
+   the dashboard reports the backend as disconnected. The automated proxy
+   tests cover this case and a failed upstream request.
+5. Do not set `NEXT_PUBLIC_BACKEND_URL` or put credentials in client-side
+   variables. The proxy reads `BACKEND_URL` on the server. Next.js exposes
+   variables with a `NEXT_PUBLIC_` prefix in browser JavaScript; see the
+   [Next.js environment-variable guidance](https://nextjs.org/docs/app/guides/environment-variables).
+
+If a reachable backend is provisioned later, its URL and authentication must
+be designed separately. Configure any approved server-only value in the
+Vercel project's Environment Variables settings, never put credentials or a
+production backend address in committed source or `.env.example`. Changes take
+effect on a new deployment. Do not point this frontend at the laptop's
+localhost or expose Flask or MQTT directly to the public internet or through a
+tunnel. No Vercel project has been created and no deployment has been
+performed.
