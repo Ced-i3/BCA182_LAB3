@@ -1,0 +1,4 @@
+# Optional offline training/evaluation dependencies. The published corrected
+# model is already included; these packages are not required to run Flask.
+-r requirements.txt
+pandas==3.0.6

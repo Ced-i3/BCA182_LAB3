@@ -1,0 +1,9 @@
+Flask==3.1.3
+paho-mqtt==2.1.0
+amqtt==0.12.1
+
+# ML runtime versions verified against activity_model_corrected.joblib.
+numpy==2.5.3
+scikit-learn==1.9.1
+joblib==1.6.0
+

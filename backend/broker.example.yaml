@@ -1,0 +1,17 @@
+# Copy this file to broker.yaml for a local development setup.
+# Replace 192.168.1.50 with the laptop's current private Wi-Fi IPv4 address.
+# This anonymous listener is for a trusted lab LAN only; never expose it to
+# the public internet.
+# STM32 publishes to lab3/sensors/motion; its device_id is in each JSON payload.
+# Keep the localhost listener so the Flask subscriber can connect locally.
+listeners:
+  default:
+    type: tcp
+    bind: 127.0.0.1:1883
+  rt_spark:
+    type: tcp
+    bind: 192.168.1.50:1883
+plugins:
+  amqtt.plugins.logging_amqtt.EventLoggerPlugin:
+  amqtt.plugins.authentication.AnonymousAuthPlugin:
+    allow_anonymous: true

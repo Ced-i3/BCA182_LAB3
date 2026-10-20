@@ -1,0 +1,112 @@
+--- a/example/rw007_stm32_port.c
++++ b/example/rw007_stm32_port.c
+@@ -92,8 +92,10 @@
+ MSH_CMD_EXPORT(wifi_powerswitch, "wifi power switch");
+ #endif /*RW007_USING_POWERSWITCH_EXAMPLE*/
+ 
+-static void rw007_gpio_init(void)
+-{
++static rt_err_t rw007_gpio_init(void)
++{
++    rt_tick_t start_tick;
++
+     // /* Configure IO */
+     rt_pin_mode(RW007_RST_PIN, PIN_MODE_OUTPUT);
+     rt_pin_mode(RW007_INT_BUSY_PIN, PIN_MODE_INPUT_PULLDOWN);
+@@ -110,8 +112,14 @@
+     rt_pin_write(RW007_RST_PIN, PIN_HIGH);
+ 
+     /* Wait rw007 ready(exit busy stat) */
++    start_tick = rt_tick_get();
+     while(!rt_pin_read(RW007_INT_BUSY_PIN))
+     {
++        if ((rt_tick_t)(rt_tick_get() - start_tick) >= rt_tick_from_millisecond(5000))
++        {
++            rt_kprintf("ERROR: RW007 INT/BUSY did not become ready after reset.\n");
++            return -RT_ETIMEOUT;
++        }
+         rt_thread_delay(5);
+     }
+ 
+@@ -121,34 +129,66 @@
+ #ifdef RW007_USING_POWERSWITCH_EXAMPLE
+     rw007_register_powerswitch_cb(_wifi_pwr_down, _wifi_pwr_on);
+ #endif // RW007_USING_POWERSWITCH_EXAMPLE
+-    
++
++    return RT_EOK;
+ }
+ 
+ int wifi_spi_device_init(void)
+ {
+     char sn_version[32];
+-
+-    rw007_gpio_init();
++    rt_err_t result;
++
++    rt_kprintf("RW007: initializing on %s.\n", RW007_SPI_BUS_NAME);
++    result = rw007_gpio_init();
++    if (result != RT_EOK)
++    {
++        return result;
++    }
+ 
+ #if (RT_VER_NUM >= 0x50000)
+-    rt_hw_spi_device_attach(RW007_SPI_BUS_NAME, "wspi", RW007_CS_PIN);
++    result = rt_hw_spi_device_attach(RW007_SPI_BUS_NAME, "wspi", RW007_CS_PIN);
+ #else
+     GPIO_TypeDef *cs_gpiox;
+     uint16_t cs_pin;
+     cs_gpiox = (GPIO_TypeDef *)((rt_base_t)GPIOA + (rt_base_t)(RW007_CS_PIN / 16) * 0x0400UL);
+     cs_pin = (uint16_t)(1 << RW007_CS_PIN % 16);
+-    rt_hw_spi_device_attach(RW007_SPI_BUS_NAME, "wspi", cs_gpiox, cs_pin);
++    result = rt_hw_spi_device_attach(RW007_SPI_BUS_NAME, "wspi", cs_gpiox, cs_pin);
+ #endif
+-
+-    rt_hw_wifi_init("wspi");
+-
+-    rt_wlan_set_mode(RT_WLAN_DEVICE_STA_NAME, RT_WLAN_STATION);
+-    rt_wlan_set_mode(RT_WLAN_DEVICE_AP_NAME, RT_WLAN_AP);
+-
+-    rw007_sn_get(sn_version);
+-    rt_kprintf("\nrw007  sn: [%s]\n", sn_version);
+-    rw007_version_get(sn_version);
+-    rt_kprintf("rw007 ver: [%s]\n\n", sn_version);
++    if (result != RT_EOK)
++    {
++        rt_kprintf("ERROR: RW007 SPI device attach failed (%d).\n", result);
++        return result;
++    }
++
++    result = rt_hw_wifi_init("wspi");
++    if (result != RT_EOK)
++    {
++        rt_kprintf("ERROR: RW007 driver initialization failed (%d).\n", result);
++        return result;
++    }
++
++    result = rt_wlan_set_mode(RT_WLAN_DEVICE_STA_NAME, RT_WLAN_STATION);
++    if (result != RT_EOK)
++    {
++        rt_kprintf("ERROR: RW007 station mode setup failed (%d).\n", result);
++        return result;
++    }
++
++    result = rw007_sn_get(sn_version);
++    if (result != RT_EOK)
++    {
++        rt_kprintf("ERROR: RW007 serial number query failed (%d).\n", result);
++        return result;
++    }
++    rt_kprintf("RW007 serial: [%s]\n", sn_version);
++
++    result = rw007_version_get(sn_version);
++    if (result != RT_EOK)
++    {
++        rt_kprintf("ERROR: RW007 version query failed (%d).\n", result);
++        return result;
++    }
++    rt_kprintf("RW007 firmware: [%s]\n", sn_version);
+ 
+     return 0;
+ }

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "board": "stm32f407-rt-spark",
+  "bsp_path": "bsp/stm32/stm32f407-rt-spark",
+  "dependencies": [
+    {
+      "name": "RT-Thread",
+      "url": "https://github.com/RT-Thread/rt-thread.git",
+      "commit": "99428a1e7f7447955aa860f7c969273a12095b8f",
+      "destination": ".",
+      "patches": ["patches/0001-rt-thread-project-changes.patch"]
+    },
+    {
+      "name": "CMSIS-Core",
+      "url": "https://github.com/RT-Thread-packages/CMSIS-Core.git",
+      "commit": "39d8e01f0be84b83a8f11d33756e82ce1ef07a84",
+      "destination": "bsp/stm32/stm32f407-rt-spark/packages/CMSIS-Core-latest",
+      "patches": []
+    },
+    {
+      "name": "stm32f4_cmsis_driver",
+      "url": "https://github.com/RT-Thread-packages/stm32f4_cmsis_driver.git",
+      "commit": "cf5edeedf133cffd3cf6e71432b0e6480b0a089c",
+      "destination": "bsp/stm32/stm32f407-rt-spark/packages/stm32f4_cmsis_driver-latest",
+      "patches": []
+    },
+    {
+      "name": "stm32f4_hal_driver",
+      "url": "https://github.com/RT-Thread-packages/stm32f4_hal_driver.git",
+      "commit": "0993af03b227b20db0fda04950e17ffb465a1eac",
+      "destination": "bsp/stm32/stm32f407-rt-spark/packages/stm32f4_hal_driver-latest",
+      "patches": []
+    },
+    {
+      "name": "icm20608",
+      "url": "https://github.com/RT-Thread-packages/icm20608.git",
+      "commit": "66e0b0971bda6dd934752ceadb0afeaeda7477ad",
+      "destination": "bsp/stm32/stm32f407-rt-spark/packages/icm20608-latest",
+      "patches": [
+        "overlays/rt-thread/bsp/stm32/stm32f407-rt-spark/local-patches/icm20608-local-safety.patch",
+        "overlays/rt-thread/bsp/stm32/stm32f407-rt-spark/local-patches/icm20608-range-readback.patch",
+        "overlays/rt-thread/bsp/stm32/stm32f407-rt-spark/local-patches/icm20608-startup-reliability.patch"
+      ]
+    },
+    {
+      "name": "rw007",
+      "url": "https://github.com/RT-Thread-packages/rw007.git",
+      "commit": "94df57f856bc2e8661022a379aa1c3d6a3bc5149",
+      "destination": "bsp/stm32/stm32f407-rt-spark/packages/rw007-latest",
+      "patches": [
+        "overlays/rt-thread/bsp/stm32/stm32f407-rt-spark/local-patches/rw007-secure-credential-entry.patch",
+        "patches/0002-rw007-stm32-port-startup.patch"
+      ]
+    }
+  ],
+  "overlay": "overlays/rt-thread",
+  "patch_policy": "Apply only listed patches, once, in array order. The historical lwip-sntp-allocation-failure.patch in the BSP overlay is documentation only; its change is already included in 0001-rt-thread-project-changes.patch."
+}

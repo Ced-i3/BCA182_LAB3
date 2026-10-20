@@ -1,0 +1,1310 @@
+diff --git a/bsp/stm32/stm32f407-rt-spark/.config b/bsp/stm32/stm32f407-rt-spark/.config
+index af43f49d..ae48f9a4 100644
+--- a/bsp/stm32/stm32f407-rt-spark/.config
++++ b/bsp/stm32/stm32f407-rt-spark/.config
+@@ -236,7 +236,9 @@ CONFIG_FINSH_USING_OPTION_COMPLETION=y
+ # CONFIG_RT_USING_DEV_BUS is not set
+ CONFIG_RT_USING_DEVICE_IPC=y
+ CONFIG_RT_UNAMED_PIPE_NUMBER=64
+-# CONFIG_RT_USING_SYSTEM_WORKQUEUE is not set
++CONFIG_RT_USING_SYSTEM_WORKQUEUE=y
++CONFIG_RT_SYSTEM_WORKQUEUE_STACKSIZE=2048
++CONFIG_RT_SYSTEM_WORKQUEUE_PRIORITY=23
+ CONFIG_RT_USING_SERIAL=y
+ CONFIG_RT_USING_SERIAL_V1=y
+ # CONFIG_RT_USING_SERIAL_V2 is not set
+@@ -249,7 +251,15 @@ CONFIG_RT_USING_I2C=y
+ # CONFIG_RT_I2C_DEBUG is not set
+ CONFIG_RT_USING_I2C_BITOPS=y
+ # CONFIG_RT_I2C_BITOPS_DEBUG is not set
+-# CONFIG_RT_USING_SOFT_I2C is not set
++CONFIG_RT_USING_SOFT_I2C=y
++CONFIG_RT_USING_SOFT_I2C2=y
++CONFIG_RT_SOFT_I2C2_SCL_PIN=81
++CONFIG_RT_SOFT_I2C2_SDA_PIN=80
++CONFIG_RT_SOFT_I2C2_BUS_NAME="swi2c2"
++CONFIG_RT_SOFT_I2C2_TIMING_DELAY=10
++CONFIG_RT_SOFT_I2C2_TIMING_TIMEOUT=10
++CONFIG_BSP_USING_SOFT_I2C=y
++CONFIG_BSP_USING_SOFT_I2C2=y
+ # CONFIG_RT_USING_PHY is not set
+ # CONFIG_RT_USING_PHY_V2 is not set
+ # CONFIG_RT_USING_ADC is not set
+@@ -263,16 +273,34 @@ CONFIG_RT_USING_PWM=y
+ # CONFIG_RT_USING_MTD_NOR is not set
+ # CONFIG_RT_USING_MTD_NAND is not set
+ # CONFIG_RT_USING_PM is not set
+-# CONFIG_RT_USING_RTC is not set
++CONFIG_RT_USING_RTC=y
++CONFIG_RT_USING_SOFT_RTC=y
+ # CONFIG_RT_USING_SDIO is not set
+-# CONFIG_RT_USING_SPI is not set
++CONFIG_RT_USING_SPI=y
+ # CONFIG_RT_USING_WDT is not set
+ # CONFIG_RT_USING_AUDIO is not set
+ # CONFIG_RT_USING_SENSOR is not set
+ # CONFIG_RT_USING_TOUCH is not set
+ # CONFIG_RT_USING_LCD is not set
+ # CONFIG_RT_USING_HWCRYPTO is not set
+-# CONFIG_RT_USING_WIFI is not set
++CONFIG_RT_USING_WIFI=y
++CONFIG_RT_WLAN_DEVICE_STA_NAME="wlan0"
++CONFIG_RT_WLAN_DEVICE_AP_NAME="wlan1"
++CONFIG_RT_WLAN_MANAGE_ENABLE=y
++CONFIG_RT_WLAN_MSH_CMD_ENABLE=y
++# CONFIG_RT_WLAN_AUTO_CONNECT_ENABLE is not set
++# CONFIG_RT_WLAN_CFG_ENABLE is not set
++CONFIG_RT_WLAN_CFG_INFO_MAX=3
++CONFIG_RT_WLAN_PROT_ENABLE=y
++CONFIG_RT_WLAN_PROT_NAME_LEN=8
++CONFIG_RT_WLAN_PROT_MAX=2
++CONFIG_RT_WLAN_DEFAULT_PROT="lwip"
++CONFIG_RT_WLAN_PROT_LWIP_ENABLE=y
++CONFIG_RT_WLAN_PROT_LWIP_NAME="lwip"
++CONFIG_RT_WLAN_WORK_THREAD_ENABLE=y
++CONFIG_RT_WLAN_WORKQUEUE_THREAD_NAME="wlan"
++CONFIG_RT_WLAN_WORKQUEUE_THREAD_SIZE=2048
++CONFIG_RT_WLAN_WORKQUEUE_THREAD_PRIO=15
+ # CONFIG_RT_USING_BLK is not set
+ # CONFIG_RT_USING_REGULATOR is not set
+ # CONFIG_RT_USING_POWER_SUPPLY is not set
+@@ -331,7 +359,17 @@ CONFIG_RT_LIBC_TZ_DEFAULT_SEC=0
+ #
+ # CONFIG_RT_USING_SAL is not set
+ # CONFIG_RT_USING_NETDEV is not set
+-# CONFIG_RT_USING_LWIP is not set
++CONFIG_RT_USING_LWIP=y
++CONFIG_RT_USING_LWIP203=y
++CONFIG_RT_LWIP_DNS=y
++CONFIG_RT_LWIP_DHCP=y
++CONFIG_RT_LWIP_UDP=y
++CONFIG_RT_LWIP_SNTP=y
++CONFIG_RT_LWIP_TCP=y
++CONFIG_RT_LWIP_TCPTHREAD_PRIORITY=10
++CONFIG_RT_LWIP_ETHTHREAD_PRIORITY=12
++CONFIG_RT_LWIP_TCPTHREAD_MBOX_SIZE=8
++CONFIG_RT_LWIP_TCPTHREAD_STACKSIZE=1024
+ # CONFIG_RT_USING_AT is not set
+ # end of Network
+ 
+@@ -409,7 +447,9 @@ CONFIG_RT_LIBC_TZ_DEFAULT_SEC=0
+ # CONFIG_PKG_USING_WLAN_WICED is not set
+ # end of Wiced WiFi
+ 
+-# CONFIG_PKG_USING_RW007 is not set
++CONFIG_PKG_USING_RW007=y
++CONFIG_RW007_USING_STM32_DRIVERS=y
++CONFIG_RW007_SPI_BUS_NAME="spi2"
+ 
+ #
+ # CYW43012 WiFi
+@@ -994,7 +1034,7 @@ CONFIG_PKG_STM32F4_CMSIS_DRIVER_VER="latest"
+ # CONFIG_PKG_USING_MAX17048 is not set
+ # CONFIG_PKG_USING_AS7341 is not set
+ # CONFIG_PKG_USING_CW2015 is not set
+-# CONFIG_PKG_USING_ICM20608 is not set
++CONFIG_PKG_USING_ICM20608=y
+ # CONFIG_PKG_USING_PAJ7620 is not set
+ # CONFIG_PKG_USING_STHS34PF80 is not set
+ # CONFIG_PKG_USING_P3T1755 is not set
+@@ -1471,10 +1511,16 @@ CONFIG_BSP_USING_USB_TO_USART=y
+ # CONFIG_BSP_USING_FS is not set
+ # CONFIG_BSP_USING_FAL is not set
+ # CONFIG_BSP_USING_EASYFLASH is not set
+-# CONFIG_BSP_USING_RW007_WLAN is not set
++CONFIG_BSP_USING_RW007_WLAN=y
++CONFIG_RW007_SPI_MAX_HZ=30000000
++CONFIG_RW007_CS_PIN=90
++CONFIG_RW007_BOOT0_PIN=29
++CONFIG_RW007_BOOT1_PIN=90
++CONFIG_RW007_INT_BUSY_PIN=107
++CONFIG_RW007_RST_PIN=111
+ # CONFIG_BSP_USING_AHT21 is not set
+ # CONFIG_BSP_USING_AP3216C is not set
+-# CONFIG_BSP_USING_ICM20608 is not set
++CONFIG_BSP_USING_ICM20608=y
+ # CONFIG_BSP_USING_USB_MOUSE is not set
+ # CONFIG_BSP_USING_CAN is not set
+ # CONFIG_BSP_USING_AUDIO is not set
+@@ -1498,7 +1544,8 @@ CONFIG_BSP_USING_UART1=y
+ # CONFIG_BSP_USING_PWM is not set
+ # CONFIG_BSP_USING_ON_CHIP_FLASH is not set
+ # CONFIG_BSP_USING_SOFT_SPI is not set
+-# CONFIG_BSP_USING_SPI is not set
++CONFIG_BSP_USING_SPI=y
++CONFIG_BSP_USING_SPI2=y
+ # CONFIG_BSP_USING_ADC is not set
+ # CONFIG_BSP_USING_I2C is not set
+ # CONFIG_BSP_USING_ONBOARD_PM is not set
+diff --git a/bsp/stm32/stm32f407-rt-spark/SConstruct b/bsp/stm32/stm32f407-rt-spark/SConstruct
+index 067dd0d1..791739e0 100644
+--- a/bsp/stm32/stm32f407-rt-spark/SConstruct
++++ b/bsp/stm32/stm32f407-rt-spark/SConstruct
+@@ -25,6 +25,9 @@ def bsp_pkg_check():
+         os.path.join("packages", "stm32f4_hal_driver-latest")
+     ]
+ 
++    if GetDepend('BSP_USING_RW007_WLAN'):
++        check_paths.append(os.path.join("packages", "rw007-latest"))
++
+     need_update = not all(os.path.exists(p) for p in check_paths)
+ 
+     if need_update:
+@@ -89,6 +92,11 @@ if GetDepend('RT_USING_BUILTIN_FDT'):
+ 
+ rtconfig.BSP_LIBRARY_TYPE = None
+ 
++# include enabled STM32 packages
++for package in ['CMSIS-Core-latest', 'stm32f4_cmsis_driver-latest', 'stm32f4_hal_driver-latest', 'icm20608-latest', 'rw007-latest']:
++    objs.extend(SConscript(os.path.join('packages', package, 'SConscript'),
++                          variant_dir=os.path.join('build', 'packages', package), duplicate=0))
++
+ # include drivers
+ objs.extend(SConscript(os.path.join(libraries_path_prefix, 'HAL_Drivers', 'SConscript'),variant_dir='build/libraries/HAL_Drivers', duplicate=0))
+ 
+diff --git a/bsp/stm32/stm32f407-rt-spark/applications/main.c b/bsp/stm32/stm32f407-rt-spark/applications/main.c
+index 8c1e3f7a..dc32842b 100644
+--- a/bsp/stm32/stm32f407-rt-spark/applications/main.c
++++ b/bsp/stm32/stm32f407-rt-spark/applications/main.c
+@@ -11,32 +11,293 @@
+ 
+ #include <board.h>
+ #include <rtthread.h>
+-#include <drv_gpio.h>
+-#ifndef RT_USING_NANO
+-#include <rtdevice.h>
+-#endif /* RT_USING_NANO */
+-
+-#ifndef RT_USING_DM
+-#define GPIO_LED_B    GET_PIN(F, 11)
+-#define GPIO_LED_R    GET_PIN(F, 12)
++#include <icm20608.h>
++
++#include "motion_mqtt.h"
++
++/* One place for selected ICM20608 ranges, scale factors, and warning levels. */
++#define ICM20608_ACCEL_RANGE             ICM20608_ACCELEROMETER_RANGE1
++#define ICM20608_ACCEL_FULL_SCALE_G      4
++#define ICM20608_ACCEL_LSB_PER_G          8192
++#define ICM20608_GYRO_RANGE               ICM20608_GYROSCOPE_RANGE1
++#define ICM20608_GYRO_FULL_SCALE_DPS      500
++#define ICM20608_GYRO_SENSITIVITY_NUM     655
++#define ICM20608_GYRO_SENSITIVITY_DEN     10
++#define ICM20608_SATURATION_WARN_PERCENT  90
++#define ICM20608_SATURATION_CLEAR_PERCENT 85
++#define OUTPUT_MILLI_SCALE                1000
++#define OUTPUT_CENTI_SCALE                100
++#define ICM20608_SAMPLE_RATE_HZ            25U
++#define ICM20608_SAMPLE_PERIOD_TICKS       (RT_TICK_PER_SECOND / ICM20608_SAMPLE_RATE_HZ)
++#define ICM20608_DIAGNOSTIC_INTERVAL_TICKS RT_TICK_PER_SECOND
++
++#if (ICM20608_SAMPLE_RATE_HZ == 0) || (ICM20608_SAMPLE_RATE_HZ > RT_TICK_PER_SECOND)
++#error "ICM20608 sample rate must map to at least one RT-Thread tick"
+ #endif
+ 
++#define ICM20608_ACCEL_WARN_COUNTS \
++    ((ICM20608_ACCEL_FULL_SCALE_G * ICM20608_ACCEL_LSB_PER_G * ICM20608_SATURATION_WARN_PERCENT) / 100)
++#define ICM20608_GYRO_WARN_COUNTS \
++    ((ICM20608_GYRO_FULL_SCALE_DPS * ICM20608_GYRO_SENSITIVITY_NUM * ICM20608_SATURATION_WARN_PERCENT) / \
++     (ICM20608_GYRO_SENSITIVITY_DEN * 100))
++#define ICM20608_ACCEL_CLEAR_COUNTS \
++    ((ICM20608_ACCEL_FULL_SCALE_G * ICM20608_ACCEL_LSB_PER_G * ICM20608_SATURATION_CLEAR_PERCENT) / 100)
++#define ICM20608_GYRO_CLEAR_COUNTS \
++    ((ICM20608_GYRO_FULL_SCALE_DPS * ICM20608_GYRO_SENSITIVITY_NUM * ICM20608_SATURATION_CLEAR_PERCENT) / \
++     (ICM20608_GYRO_SENSITIVITY_DEN * 100))
++
++static rt_uint8_t saturation_warning_mask;
++
++static void report_sampling_diagnostics(rt_tick_t now, rt_tick_t *window_start,
++                                        rt_uint32_t *cycles, rt_uint32_t *valid_samples,
++                                        rt_uint32_t *missed_deadlines, rt_uint32_t *i2c_errors)
++{
++    rt_tick_t elapsed = now - *window_start;
++
++    if (elapsed >= ICM20608_DIAGNOSTIC_INTERVAL_TICKS)
++    {
++        rt_uint32_t cycle_rate_tenths =
++            (rt_uint32_t)(((rt_uint64_t)*cycles * RT_TICK_PER_SECOND * 10U) / elapsed);
++        rt_uint32_t valid_rate_tenths =
++            (rt_uint32_t)(((rt_uint64_t)*valid_samples * RT_TICK_PER_SECOND * 10U) / elapsed);
++
++        rt_kprintf("Sampling: cycles=%u.%u Hz valid=%u.%u Hz missed=%u I2C_errors=%u\r\n",
++                   (unsigned int)(cycle_rate_tenths / 10U),
++                   (unsigned int)(cycle_rate_tenths % 10U),
++                   (unsigned int)(valid_rate_tenths / 10U),
++                   (unsigned int)(valid_rate_tenths % 10U),
++                   (unsigned int)*missed_deadlines, (unsigned int)*i2c_errors);
++
++        *window_start = now;
++        *cycles = 0;
++        *valid_samples = 0;
++        *missed_deadlines = 0;
++        *i2c_errors = 0;
++    }
++}
++
++static rt_int32_t accel_to_milli_g(rt_int16_t raw)
++{
++    rt_int32_t scaled = (rt_int32_t)raw * OUTPUT_MILLI_SCALE;
++
++    scaled += (scaled >= 0) ? (ICM20608_ACCEL_LSB_PER_G / 2) : -(ICM20608_ACCEL_LSB_PER_G / 2);
++    return scaled / ICM20608_ACCEL_LSB_PER_G;
++}
++
++static rt_int32_t gyro_to_centi_dps(rt_int16_t raw)
++{
++    rt_int32_t scaled = (rt_int32_t)raw * OUTPUT_CENTI_SCALE * ICM20608_GYRO_SENSITIVITY_DEN;
++
++    scaled += (scaled >= 0) ? (ICM20608_GYRO_SENSITIVITY_NUM / 2) : -(ICM20608_GYRO_SENSITIVITY_NUM / 2);
++    return scaled / ICM20608_GYRO_SENSITIVITY_NUM;
++}
++
++static void print_milli_g(rt_int32_t value)
++{
++    rt_uint32_t magnitude = (rt_uint32_t)(value < 0 ? -value : value);
++
++    rt_kprintf("%s%u.%03u", value < 0 ? "-" : "",
++               (unsigned int)(magnitude / OUTPUT_MILLI_SCALE),
++               (unsigned int)(magnitude % OUTPUT_MILLI_SCALE));
++}
++
++static void print_centi_dps(rt_int32_t value)
++{
++    rt_uint32_t magnitude = (rt_uint32_t)(value < 0 ? -value : value);
++
++    rt_kprintf("%s%u.%02u", value < 0 ? "-" : "",
++               (unsigned int)(magnitude / OUTPUT_CENTI_SCALE),
++               (unsigned int)(magnitude % OUTPUT_CENTI_SCALE));
++}
++
++static void check_axis_saturation(rt_int16_t raw, rt_uint8_t axis_bit,
++                                  rt_int32_t warn_counts, rt_int32_t clear_counts,
++                                  const char *sensor_name, char axis_name)
++{
++    rt_int32_t magnitude = (raw < 0) ? -(rt_int32_t)raw : (rt_int32_t)raw;
++    rt_uint8_t mask = (rt_uint8_t)(1U << axis_bit);
++
++    if (magnitude >= warn_counts)
++    {
++        if ((saturation_warning_mask & mask) == 0)
++        {
++            rt_kprintf("WARNING: %s %c axis near full scale (%d counts; threshold %d).\r\n",
++                       sensor_name, axis_name, raw, (int)warn_counts);
++            saturation_warning_mask |= mask;
++        }
++    }
++    else if (magnitude < clear_counts)
++    {
++        saturation_warning_mask &= (rt_uint8_t)~mask;
++    }
++}
++
++static rt_err_t configure_and_verify_ranges(icm20608_device_t sensor)
++{
++    rt_uint8_t accel_range;
++    rt_uint8_t gyro_range;
++    rt_err_t result;
++
++    result = icm20608_set_param(sensor, ICM20608_ACCEL_CONFIG1, ICM20608_ACCEL_RANGE);
++    if (result != RT_EOK)
++    {
++        rt_kprintf("ERROR: Failed to write ICM20608 accelerometer range (%d).\r\n", result);
++        return result;
++    }
++
++    result = icm20608_set_param(sensor, ICM20608_GYRO_CONFIG, ICM20608_GYRO_RANGE);
++    if (result != RT_EOK)
++    {
++        rt_kprintf("ERROR: Failed to write ICM20608 gyroscope range (%d).\r\n", result);
++        return result;
++    }
++
++    result = icm20608_get_param(sensor, ICM20608_ACCEL_CONFIG1, &accel_range);
++    if (result != RT_EOK)
++    {
++        rt_kprintf("ERROR: Failed to read back ICM20608 accelerometer range (%d).\r\n", result);
++        return result;
++    }
++
++    result = icm20608_get_param(sensor, ICM20608_GYRO_CONFIG, &gyro_range);
++    if (result != RT_EOK)
++    {
++        rt_kprintf("ERROR: Failed to read back ICM20608 gyroscope range (%d).\r\n", result);
++        return result;
++    }
++
++    if ((accel_range != ICM20608_ACCEL_RANGE) || (gyro_range != ICM20608_GYRO_RANGE))
++    {
++        rt_kprintf("ERROR: ICM20608 range readback mismatch (accel=%u gyro=%u).\r\n",
++                   (unsigned int)accel_range, (unsigned int)gyro_range);
++        return -RT_ERROR;
++    }
++
++    return RT_EOK;
++}
++
+ int main(void)
+ {
+-#ifndef RT_USING_DM
+-    rt_pin_mode(GPIO_LED_R, PIN_MODE_OUTPUT);
++    const char *i2c_bus_name = "swi2c2";
++    icm20608_device_t sensor;
++    rt_tick_t schedule_tick;
++    rt_tick_t diagnostic_window_start;
++    rt_tick_t last_sample_log_tick;
++    rt_uint32_t sampling_cycles = 0;
++    rt_uint32_t valid_samples = 0;
++    rt_uint32_t missed_deadlines = 0;
++    rt_uint32_t i2c_read_errors = 0;
+ 
+-    while (1)
++    rt_kprintf("ICM20608 bring-up on %s (address 0x68)\r\n", i2c_bus_name);
++
++    sensor = icm20608_init(i2c_bus_name);
++    if (sensor == RT_NULL)
+     {
+-        rt_pin_write(GPIO_LED_R, PIN_HIGH);
+-        rt_thread_mdelay(500);
+-        rt_pin_write(GPIO_LED_R, PIN_LOW);
+-        rt_thread_mdelay(500);
++        rt_kprintf("ERROR: ICM20608 initialization failed on %s.\r\n", i2c_bus_name);
++        return -RT_ERROR;
+     }
+-#else
++
++    if (configure_and_verify_ranges(sensor) != RT_EOK)
++    {
++        icm20608_deinit(sensor);
++        rt_kprintf("ERROR: ICM20608 range configuration failed; sampling stopped.\r\n");
++        return -RT_ERROR;
++    }
++
++    rt_kprintf("Ranges verified: accel +/-%d g (%d LSB/g), gyro +/-%d dps (%d.%d LSB/dps).\r\n",
++               ICM20608_ACCEL_FULL_SCALE_G, ICM20608_ACCEL_LSB_PER_G,
++               ICM20608_GYRO_FULL_SCALE_DPS,
++               ICM20608_GYRO_SENSITIVITY_NUM / ICM20608_GYRO_SENSITIVITY_DEN,
++               ICM20608_GYRO_SENSITIVITY_NUM % ICM20608_GYRO_SENSITIVITY_DEN);
++    rt_kprintf("Saturation warnings begin at %d%% of range; clear below %d%%.\r\n",
++               ICM20608_SATURATION_WARN_PERCENT, ICM20608_SATURATION_CLEAR_PERCENT);
++    rt_kprintf("Sampling target: %u Hz (%u RT-Thread ticks/sample).\r\n",
++               (unsigned int)ICM20608_SAMPLE_RATE_HZ,
++               (unsigned int)ICM20608_SAMPLE_PERIOD_TICKS);
++
++    schedule_tick = rt_tick_get();
++    diagnostic_window_start = schedule_tick;
++    last_sample_log_tick = schedule_tick;
++
+     while (1)
+     {
+-        rt_thread_mdelay(1000);
++        rt_tick_t sample_start_tick = rt_tick_get();
++        rt_int16_t ax, ay, az;
++        rt_int16_t gx, gy, gz;
++        rt_err_t accel_result;
++        rt_err_t gyro_result;
++
++        accel_result = icm20608_get_accel(sensor, &ax, &ay, &az);
++        gyro_result = icm20608_get_gyro(sensor, &gx, &gy, &gz);
++
++        if ((accel_result == RT_EOK) && (gyro_result == RT_EOK))
++        {
++            rt_int16_t raw_axes[6] = {ax, ay, az, gx, gy, gz};
++
++            motion_mqtt_sample_tick(RT_TRUE, raw_axes);
++        }
++        else
++        {
++            motion_mqtt_sample_tick(RT_FALSE, RT_NULL);
++        }
++
++        if (accel_result != RT_EOK)
++        {
++            rt_kprintf("ERROR: ICM20608 accelerometer read failed (%d).\r\n", accel_result);
++            i2c_read_errors++;
++        }
++        if (gyro_result != RT_EOK)
++        {
++            rt_kprintf("ERROR: ICM20608 gyroscope read failed (%d).\r\n", gyro_result);
++            i2c_read_errors++;
++        }
++        if ((accel_result == RT_EOK) && (gyro_result == RT_EOK))
++        {
++            if ((rt_tick_t)(sample_start_tick - last_sample_log_tick) >= RT_TICK_PER_SECOND)
++            {
++                rt_int32_t ax_mg = accel_to_milli_g(ax);
++                rt_int32_t ay_mg = accel_to_milli_g(ay);
++                rt_int32_t az_mg = accel_to_milli_g(az);
++                rt_int32_t gx_centi_dps = gyro_to_centi_dps(gx);
++                rt_int32_t gy_centi_dps = gyro_to_centi_dps(gy);
++                rt_int32_t gz_centi_dps = gyro_to_centi_dps(gz);
++
++                rt_kprintf("Accel raw (LSB): X=%d Y=%d Z=%d | Accel (g): X=", ax, ay, az);
++                print_milli_g(ax_mg);
++                rt_kprintf(" Y=");
++                print_milli_g(ay_mg);
++                rt_kprintf(" Z=");
++                print_milli_g(az_mg);
++
++                rt_kprintf(" | Gyro raw (LSB): X=%d Y=%d Z=%d | Gyro (dps): X=", gx, gy, gz);
++                print_centi_dps(gx_centi_dps);
++                rt_kprintf(" Y=");
++                print_centi_dps(gy_centi_dps);
++                rt_kprintf(" Z=");
++                print_centi_dps(gz_centi_dps);
++                rt_kprintf("\r\n");
++                last_sample_log_tick = sample_start_tick;
++            }
++
++            check_axis_saturation(ax, 0, ICM20608_ACCEL_WARN_COUNTS, ICM20608_ACCEL_CLEAR_COUNTS, "accelerometer", 'X');
++            check_axis_saturation(ay, 1, ICM20608_ACCEL_WARN_COUNTS, ICM20608_ACCEL_CLEAR_COUNTS, "accelerometer", 'Y');
++            check_axis_saturation(az, 2, ICM20608_ACCEL_WARN_COUNTS, ICM20608_ACCEL_CLEAR_COUNTS, "accelerometer", 'Z');
++            check_axis_saturation(gx, 3, ICM20608_GYRO_WARN_COUNTS, ICM20608_GYRO_CLEAR_COUNTS, "gyroscope", 'X');
++            check_axis_saturation(gy, 4, ICM20608_GYRO_WARN_COUNTS, ICM20608_GYRO_CLEAR_COUNTS, "gyroscope", 'Y');
++            check_axis_saturation(gz, 5, ICM20608_GYRO_WARN_COUNTS, ICM20608_GYRO_CLEAR_COUNTS, "gyroscope", 'Z');
++            valid_samples++;
++        }
++
++        sampling_cycles++;
++        report_sampling_diagnostics(rt_tick_get(), &diagnostic_window_start,
++                                    &sampling_cycles, &valid_samples,
++                                    &missed_deadlines, &i2c_read_errors);
++
++        if ((rt_tick_t)(rt_tick_get() - sample_start_tick) >= ICM20608_SAMPLE_PERIOD_TICKS)
++        {
++            missed_deadlines++;
++        }
++
++        rt_thread_delay_until(&schedule_tick, ICM20608_SAMPLE_PERIOD_TICKS);
+     }
+-#endif
+ }
+diff --git a/bsp/stm32/stm32f407-rt-spark/rtconfig.h b/bsp/stm32/stm32f407-rt-spark/rtconfig.h
+index b72dd580..12bb05a1 100644
+--- a/bsp/stm32/stm32f407-rt-spark/rtconfig.h
++++ b/bsp/stm32/stm32f407-rt-spark/rtconfig.h
+@@ -145,6 +145,36 @@
+ /* Device Drivers */
+ 
+ #define RT_USING_DEVICE_IPC
++#define RT_USING_SYSTEM_WORKQUEUE
++#define RT_SYSTEM_WORKQUEUE_STACKSIZE 2048
++#define RT_SYSTEM_WORKQUEUE_PRIORITY 23
++#define RT_USING_WIFI
++#define RT_WLAN_DEVICE_STA_NAME "wlan0"
++#define RT_WLAN_DEVICE_AP_NAME "wlan1"
++#define RT_WLAN_MANAGE_ENABLE
++#define RT_WLAN_MSH_CMD_ENABLE
++#define RT_WLAN_CFG_INFO_MAX 3
++#define RT_WLAN_PROT_ENABLE
++#define RT_WLAN_PROT_NAME_LEN 8
++#define RT_WLAN_PROT_MAX 2
++#define RT_WLAN_DEFAULT_PROT "lwip"
++#define RT_WLAN_PROT_LWIP_ENABLE
++#define RT_WLAN_PROT_LWIP_NAME "lwip"
++#define RT_WLAN_WORK_THREAD_ENABLE
++#define RT_WLAN_WORKQUEUE_THREAD_NAME "wlan"
++#define RT_WLAN_WORKQUEUE_THREAD_SIZE 2048
++#define RT_WLAN_WORKQUEUE_THREAD_PRIO 15
++#define RT_USING_LWIP
++#define RT_USING_LWIP203
++#define RT_LWIP_DNS
++#define RT_LWIP_DHCP
++#define RT_LWIP_UDP
++#define RT_LWIP_SNTP
++#define RT_LWIP_TCP
++#define RT_LWIP_TCPTHREAD_PRIORITY 10
++#define RT_LWIP_ETHTHREAD_PRIORITY 12
++#define RT_LWIP_TCPTHREAD_MBOX_SIZE 8
++#define RT_LWIP_TCPTHREAD_STACKSIZE 1024
+ #define RT_UNAMED_PIPE_NUMBER 64
+ #define RT_USING_SERIAL
+ #define RT_USING_SERIAL_V1
+@@ -152,8 +182,20 @@
+ #define RT_SERIAL_RB_BUFSZ 64
+ #define RT_USING_I2C
+ #define RT_USING_I2C_BITOPS
++#define RT_USING_SOFT_I2C
++#define RT_USING_SOFT_I2C2
++#define RT_SOFT_I2C2_SCL_PIN 81
++#define RT_SOFT_I2C2_SDA_PIN 80
++#define RT_SOFT_I2C2_BUS_NAME "swi2c2"
++#define RT_SOFT_I2C2_TIMING_DELAY 10
++#define RT_SOFT_I2C2_TIMING_TIMEOUT 10
++#define BSP_USING_SOFT_I2C
++#define BSP_USING_SOFT_I2C2
+ #define RT_USING_PWM
+ #define RT_USING_PIN
++#define RT_USING_SPI
++#define RT_USING_RTC
++#define RT_USING_SOFT_RTC
+ /* end of Device Drivers */
+ 
+ /* C/C++ and POSIX layer */
+@@ -341,6 +383,10 @@
+ 
+ /* sensors drivers */
+ 
++#define PKG_USING_ICM20608
++#define PKG_USING_RW007
++#define RW007_USING_STM32_DRIVERS
++#define RW007_SPI_BUS_NAME "spi2"
+ /* end of sensors drivers */
+ 
+ /* touch drivers */
+@@ -424,6 +470,14 @@
+ /* Onboard Peripheral Drivers */
+ 
+ #define BSP_USING_USB_TO_USART
++#define BSP_USING_ICM20608
++#define BSP_USING_RW007_WLAN
++#define RW007_SPI_MAX_HZ 30000000
++#define RW007_CS_PIN 90
++#define RW007_BOOT0_PIN 29
++#define RW007_BOOT1_PIN 90
++#define RW007_INT_BUSY_PIN 107
++#define RW007_RST_PIN 111
+ /* end of Onboard Peripheral Drivers */
+ 
+ /* On-chip Peripheral Drivers */
+@@ -432,6 +486,8 @@
+ #define BSP_USING_UART
+ #define BSP_STM32_UART_V1_TX_TIMEOUT 2000
+ #define BSP_USING_UART1
++#define BSP_USING_SPI
++#define BSP_USING_SPI2
+ /* end of On-chip Peripheral Drivers */
+ 
+ /* Board extended module Drivers */
+diff --git a/components/drivers/wlan/dev_wlan.c b/components/drivers/wlan/dev_wlan.c
+index f9c7f33c..494e3614 100644
+--- a/components/drivers/wlan/dev_wlan.c
++++ b/components/drivers/wlan/dev_wlan.c
+@@ -32,6 +32,16 @@
+ #define WLAN_DEV_LOCK(_wlan)      (rt_mutex_take(&(_wlan)->lock, RT_WAITING_FOREVER))
+ #define WLAN_DEV_UNLOCK(_wlan)    (rt_mutex_release(&(_wlan)->lock))
+ 
++static void wlan_sensitive_clear(void *data, rt_size_t length)
++{
++    volatile rt_uint8_t *byte = (volatile rt_uint8_t *)data;
++
++    while (length--)
++    {
++        *byte++ = 0;
++    }
++}
++
+ #if RT_WLAN_SSID_MAX_LENGTH < 1
+ #error "SSID length is too short"
+ #endif
+@@ -119,6 +129,7 @@ rt_err_t rt_wlan_dev_connect(struct rt_wlan_device *device, struct rt_wlan_info
+     sta_info.security = info->security;
+ 
+     result = rt_device_control(RT_DEVICE(device), RT_WLAN_CMD_JOIN, &sta_info);
++    wlan_sensitive_clear(&sta_info.key, sizeof(sta_info.key));
+     return result;
+ }
+ 
+@@ -201,6 +212,7 @@ rt_err_t rt_wlan_dev_ap_start(struct rt_wlan_device *device, struct rt_wlan_info
+     ap_info.security = info->security;
+ 
+     result = rt_device_control(RT_DEVICE(device), RT_WLAN_CMD_SOFTAP, &ap_info);
++    wlan_sensitive_clear(&ap_info.key, sizeof(ap_info.key));
+     return result;
+ }
+ 
+diff --git a/components/drivers/wlan/dev_wlan_cfg.c b/components/drivers/wlan/dev_wlan_cfg.c
+index e62ed9d9..60b3a474 100644
+--- a/components/drivers/wlan/dev_wlan_cfg.c
++++ b/components/drivers/wlan/dev_wlan_cfg.c
+@@ -399,7 +399,7 @@ void rt_wlan_cfg_dump(void)
+ 
+     rt_wlan_cfg_init();
+ 
+-    rt_kprintf("             SSID                           PASSWORD                   MAC            security     chn\n");
++    rt_kprintf("             SSID                           KEY STATUS                 MAC            security     chn\n");
+     rt_kprintf("------------------------------- ------------------------------- -----------------  --------------  ---\n");
+     for (index = 0; index < cfg_cache->num; index ++)
+     {
+@@ -411,10 +411,7 @@ void rt_wlan_cfg_dump(void)
+         else
+             rt_kprintf("%-32.32s", " ");
+ 
+-        if (key->len)
+-            rt_kprintf("%-32.32s", &key->val[0]);
+-        else
+-            rt_kprintf("%-32.32s", " ");
++        rt_kprintf("%-32.32s", key->len ? "<redacted>" : "(none)");
+ 
+         rt_kprintf("%02x:%02x:%02x:%02x:%02x:%02x  ",
+                    info->bssid[0],
+diff --git a/components/drivers/wlan/dev_wlan_cmd.c b/components/drivers/wlan/dev_wlan_cmd.c
+index a0e25e13..b2dc5ca2 100644
+--- a/components/drivers/wlan/dev_wlan_cmd.c
++++ b/components/drivers/wlan/dev_wlan_cmd.c
+@@ -12,9 +12,15 @@
+ 
+ #include <rtthread.h>
+ #include <rthw.h>
++#include <shell.h>
+ #include <dev_wlan_mgnt.h>
+ #include <dev_wlan_cfg.h>
+ #include <dev_wlan_prot.h>
++#ifdef RT_USING_LWIP
++#include <lwip/netif.h>
++#include <lwip/netifapi.h>
++#include <lwip/ip4_addr.h>
++#endif
+ 
+ #define DBG_TAG "WLAN.cmd"
+ #ifdef RT_WLAN_MGNT_DEBUG
+@@ -40,10 +46,23 @@ static int wifi_scan(int argc, char *argv[]);
+ static int wifi_status(int argc, char *argv[]);
+ static int wifi_join(int argc, char *argv[]);
+ static int wifi_ap(int argc, char *argv[]);
++static int wifi_ap_secure(int argc, char *argv[]);
+ static int wifi_list_sta(int argc, char *argv[]);
+ static int wifi_disconnect(int argc, char *argv[]);
+ static int wifi_ap_stop(int argc, char *argv[]);
+ 
++#ifdef RT_USING_LWIP
++struct wifi_netif_status_snapshot
++{
++    rt_bool_t link_up;
++    rt_bool_t ipv4_assigned;
++    char ipv4[16];
++};
++
++static struct wifi_netif_status_snapshot wifi_netif_status;
++static err_t wifi_netif_status_read(struct netif *netif);
++#endif
++
+ #ifdef RT_WLAN_CMD_DEBUG
+ /* just for debug  */
+ static int wifi_debug(int argc, char *argv[]);
+@@ -63,6 +82,7 @@ static const struct wifi_cmd_des cmd_tab[] = {
+     { "status", wifi_status },
+     { "join", wifi_join },
+     { "ap", wifi_ap },
++    { "ap_secure", wifi_ap_secure },
+     { "list_sta", wifi_list_sta },
+     { "disc", wifi_disconnect },
+     { "ap_stop", wifi_ap_stop },
+@@ -127,8 +147,9 @@ static int wifi_help(int argc, char *argv[])
+     rt_kprintf("wifi\n");
+     rt_kprintf("wifi help\n");
+     rt_kprintf("wifi scan [SSID]\n");
+-    rt_kprintf("wifi join [SSID] [PASSWORD]\n");
+-    rt_kprintf("wifi ap SSID [PASSWORD]\n");
++    rt_kprintf("wifi join SSID  (prompts for password without echo)\n");
++    rt_kprintf("wifi ap SSID  (open access point)\n");
++    rt_kprintf("wifi ap_secure SSID  (prompts for password without echo)\n");
+     rt_kprintf("wifi disc\n");
+     rt_kprintf("wifi ap_stop\n");
+     rt_kprintf("wifi status\n");
+@@ -143,6 +164,7 @@ static int wifi_status(int argc, char *argv[])
+ {
+     int rssi;
+     struct rt_wlan_info info;
++    rt_err_t info_result;
+ 
+     if (argc > 2)
+     {
+@@ -152,22 +174,60 @@ static int wifi_status(int argc, char *argv[])
+     if (rt_wlan_is_connected() == 1)
+     {
+         rssi = rt_wlan_get_rssi();
+-        rt_wlan_get_info(&info);
++        info_result = rt_wlan_get_info(&info);
+         rt_kprintf("Wi-Fi STA Info\n");
+-        rt_kprintf("SSID : %-.32s\n", &info.ssid.val[0]);
+-        rt_kprintf("MAC Addr: %02x:%02x:%02x:%02x:%02x:%02x\n", info.bssid[0],
+-                   info.bssid[1],
+-                   info.bssid[2],
+-                   info.bssid[3],
+-                   info.bssid[4],
+-                   info.bssid[5]);
+-        rt_kprintf("Channel: %d\n", info.channel);
+-        rt_kprintf("DataRate: %dMbps\n", info.datarate / 1000000);
++        rt_kprintf("Association: connected\n");
++        if (info_result == RT_EOK)
++        {
++            rt_kprintf("SSID: %-.32s\n", &info.ssid.val[0]);
++            rt_kprintf("Channel: %d\n", info.channel);
++            rt_kprintf("DataRate: %dMbps\n", info.datarate / 1000000);
++        }
++        else
++        {
++            rt_kprintf("Wi-Fi details unavailable (error %d)\n", info_result);
++        }
+         rt_kprintf("RSSI: %d\n", rssi);
++#ifdef RT_USING_LWIP
++        {
++            struct netif *station_netif = RT_NULL;
++            char netif_name[3] = { 'w', '0', '\0' };
++            int netif_index;
++            for (netif_index = 0; netif_index < 10; netif_index++)
++            {
++                netif_name[1] = (char)('0' + netif_index);
++                station_netif = netif_find(netif_name);
++                if (station_netif != RT_NULL)
++                {
++                    break;
++                }
++            }
++
++            if (station_netif == RT_NULL)
++            {
++                rt_kprintf("IPv4: WLAN interface unavailable\n");
++            }
++            else if (netifapi_netif_common(station_netif, RT_NULL, wifi_netif_status_read) != ERR_OK)
++            {
++                rt_kprintf("IPv4: status query failed\n");
++            }
++            else if (wifi_netif_status.ipv4_assigned)
++            {
++                rt_kprintf("IPv4: %s (DHCP address)\n", wifi_netif_status.ipv4);
++            }
++            else
++            {
++                rt_kprintf("IPv4: DHCP pending/no address (link %s)\n",
++                           wifi_netif_status.link_up ? "up" : "down");
++            }
++        }
++#else
++        rt_kprintf("IPv4: lwIP support is disabled\n");
++#endif
+     }
+     else
+     {
+-        rt_kprintf("wifi disconnected!\n");
++        rt_kprintf("Association: disconnected\n");
+     }
+ 
+     if (rt_wlan_ap_is_active() == 1)
+@@ -193,6 +253,32 @@ static int wifi_status(int argc, char *argv[])
+     return 0;
+ }
+ 
++#ifdef RT_USING_LWIP
++static err_t wifi_netif_status_read(struct netif *netif)
++{
++    const ip4_addr_t *ip_addr;
++
++    if (netif == RT_NULL)
++    {
++        return ERR_ARG;
++    }
++
++    wifi_netif_status.link_up = netif_is_link_up(netif) ? RT_TRUE : RT_FALSE;
++    ip_addr = netif_ip4_addr(netif);
++    wifi_netif_status.ipv4_assigned = ip_addr != RT_NULL && !ip4_addr_isany(ip_addr);
++    if (wifi_netif_status.ipv4_assigned)
++    {
++        ip4addr_ntoa_r(ip_addr, wifi_netif_status.ipv4, sizeof(wifi_netif_status.ipv4));
++    }
++    else
++    {
++        wifi_netif_status.ipv4[0] = '\0';
++    }
++
++    return ERR_OK;
++}
++#endif
++
+ 
+ static rt_bool_t wifi_info_isequ(struct rt_wlan_info *info1, struct rt_wlan_info *info2)
+ {
+@@ -512,71 +598,170 @@ static int wifi_scan(int argc, char *argv[])
+     return ret;
+ }
+ 
+-static int wifi_join(int argc, char *argv[])
++static void wifi_secure_zero(void *data, rt_size_t length)
+ {
+-    const char *ssid = RT_NULL;
+-    const char *key = RT_NULL;
+-    struct rt_wlan_cfg_info cfg_info;
++    volatile rt_uint8_t *byte = (volatile rt_uint8_t *)data;
+ 
+-    rt_memset(&cfg_info, 0, sizeof(cfg_info));
+-    if (wifi_check_sta_mode() != RT_EOK)
++    while (length--)
+     {
+-        return -RT_ERROR;
++        *byte++ = 0;
+     }
+-    if (argc == 2)
++}
++
++/* Read directly from the console while the MSH command handler owns input.
++ * This bypasses shell->line and command history; only FinSH's normal echo is
++ * disabled, and the previous echo state is restored on every return path. */
++static rt_err_t wifi_read_password(char *password, rt_size_t capacity, rt_size_t *length)
++{
++    rt_size_t used = 0;
++    rt_uint32_t previous_echo;
++    rt_bool_t started = RT_FALSE;
++    rt_bool_t overflow = RT_FALSE;
++    rt_bool_t invalid = RT_FALSE;
++    rt_err_t result = RT_EOK;
++    int ch;
++
++    if (password == RT_NULL || length == RT_NULL || capacity < 2)
+     {
+-#ifdef RT_WLAN_CFG_ENABLE
+-        /* get info to connect */
+-        if (rt_wlan_cfg_read_index(&cfg_info, 0) == 1)
++        return -RT_EINVAL;
++    }
++
++    wifi_secure_zero(password, capacity);
++    previous_echo = finsh_get_echo();
++    rt_kprintf("\nPassword (hidden; Enter submits, Ctrl+C cancels): ");
++    finsh_set_echo(0);
++
++    for (;;)
++    {
++        ch = finsh_getchar();
++        if (ch < 0)
++        {
++            result = -RT_ERROR;
++            break;
++        }
++
++        /* A CRLF terminal may leave LF after FinSH consumed the command CR. */
++        if (!started && (ch == '\r' || ch == '\n'))
++        {
++            continue;
++        }
++        started = RT_TRUE;
++
++        if (ch == '\r' || ch == '\n')
+         {
+-            ssid = (char *)(&cfg_info.info.ssid.val[0]);
+-            if (cfg_info.key.len)
++            break;
++        }
++        if (ch == 0x03 || ch == 0x1b)
++        {
++            result = -RT_ERROR;
++            break;
++        }
++        if (ch == 0x08 || ch == 0x7f)
++        {
++            if (!overflow && used > 0)
+             {
+-                key = (char *)(&cfg_info.key.val[0]);
++                password[--used] = '\0';
+             }
++            continue;
++        }
++        if (ch < 0x20 || ch > 0x7e)
++        {
++            invalid = RT_TRUE;
++            continue;
++        }
++        if (used + 1 < capacity)
++        {
++            password[used++] = (char)ch;
+         }
+         else
+-#endif
+         {
+-            rt_kprintf("not find connect info\n");
++            overflow = RT_TRUE;
+         }
+     }
+-    else if (argc == 3)
++
++    finsh_set_echo(previous_echo);
++    rt_kprintf("\n");
++
++    if (result != RT_EOK || overflow || invalid || used == 0)
+     {
+-        /* ssid */
+-        ssid = argv[2];
++        wifi_secure_zero(password, capacity);
++        if (overflow)
++        {
++            rt_kprintf("Password exceeds the %d-character RW007 driver limit.\n", (int)(capacity - 1));
++        }
++        else if (invalid)
++        {
++            rt_kprintf("Password entry contains unsupported characters.\n");
++        }
++        else if (used == 0 && result == RT_EOK)
++        {
++            rt_kprintf("Password must not be empty.\n");
++        }
++        else
++        {
++            rt_kprintf("Password entry cancelled or console unavailable.\n");
++        }
++        return -RT_ERROR;
++    }
++
++    password[used] = '\0';
++    *length = used;
++    return RT_EOK;
++}
++
++static int wifi_join(int argc, char *argv[])
++{
++    char password[RT_WLAN_PASSWORD_MAX_LENGTH];
++    rt_size_t password_length = 0;
++    rt_err_t err;
++    rt_size_t ssid_length;
++
++    if (argc != 3)
++    {
++        rt_kprintf("Usage: wifi join SSID\n");
++        return -RT_EINVAL;
+     }
+-    else if (argc == 4)
++    if (wifi_check_sta_mode() != RT_EOK)
+     {
+-        ssid = argv[2];
+-        /* password */
+-        key = argv[3];
++        return -RT_ERROR;
+     }
+-    else
++
++    ssid_length = rt_strlen(argv[2]);
++    if (ssid_length == 0 || ssid_length > RT_WLAN_SSID_MAX_LENGTH)
+     {
+-        return -1;
++        rt_kprintf("SSID length is invalid.\n");
++        return -RT_EINVAL;
+     }
+-    rt_wlan_connect(ssid, key);
+-    return 0;
++
++    if (wifi_read_password(password, sizeof(password), &password_length) != RT_EOK)
++    {
++        return -RT_ERROR;
++    }
++
++    err = rt_wlan_connect(argv[2], password);
++    wifi_secure_zero(password, sizeof(password));
++    if (err != RT_EOK)
++    {
++        rt_kprintf("Wi-Fi connection failed (error %d).\n", err);
++        return -RT_ERROR;
++    }
++
++    rt_kprintf("Wi-Fi connection attempt completed; run 'wifi status' for association and DHCP status.\n");
++    return RT_EOK;
+ }
+ 
+ static int wifi_ap(int argc, char *argv[])
+ {
+     const char *ssid = RT_NULL;
+-    const char *key = RT_NULL;
+     rt_err_t err;
+ 
+     if (argc == 3)
+     {
+         ssid = argv[2];
+     }
+-    else if (argc == 4)
+-    {
+-        ssid = argv[2];
+-        key = argv[3];
+-    }
+     else
+     {
++        rt_kprintf("Usage: wifi ap SSID (open AP only); use wifi ap_secure SSID for a hidden password prompt.\n");
+         return -1;
+     }
+ 
+@@ -584,7 +769,7 @@ static int wifi_ap(int argc, char *argv[])
+     {
+         return -RT_ERROR;
+     }
+-    err = rt_wlan_start_ap(ssid, key);
++    err = rt_wlan_start_ap(ssid, RT_NULL);
+     if (err != RT_EOK)
+     {
+         LOG_E("start ap failed:%d!", err);
+@@ -593,6 +778,42 @@ static int wifi_ap(int argc, char *argv[])
+     return 0;
+ }
+ 
++static int wifi_ap_secure(int argc, char *argv[])
++{
++    char password[RT_WLAN_PASSWORD_MAX_LENGTH];
++    rt_size_t password_length = 0;
++    rt_err_t err;
++
++    if (argc != 3)
++    {
++        rt_kprintf("Usage: wifi ap_secure SSID\n");
++        return -RT_EINVAL;
++    }
++    if (wifi_check_ap_mode() != RT_EOK)
++    {
++        return -RT_ERROR;
++    }
++    if (rt_strlen(argv[2]) == 0 || rt_strlen(argv[2]) > RT_WLAN_SSID_MAX_LENGTH)
++    {
++        rt_kprintf("SSID length is invalid.\n");
++        return -RT_EINVAL;
++    }
++    if (wifi_read_password(password, sizeof(password), &password_length) != RT_EOK)
++    {
++        return -RT_ERROR;
++    }
++
++    err = rt_wlan_start_ap(argv[2], password);
++    wifi_secure_zero(password, sizeof(password));
++    if (err != RT_EOK)
++    {
++        rt_kprintf("Secure AP start failed (error %d).\n", err);
++        return -RT_ERROR;
++    }
++    rt_kprintf("Secure AP start completed.\n");
++    return RT_EOK;
++}
++
+ static int wifi_list_sta(int argc, char *argv[])
+ {
+     struct rt_wlan_info *sta_info;
+@@ -663,7 +884,7 @@ static int wifi_ap_stop(int argc, char *argv[])
+ /* just for debug */
+ static int wifi_debug_help(int argc, char *argv[])
+ {
+-    rt_kprintf("save_cfg ssid [password]\n");
++    rt_kprintf("save_cfg ssid (open network only)\n");
+     rt_kprintf("dump_cfg\n");
+     rt_kprintf("clear_cfg\n");
+     rt_kprintf("dump_prot\n");
+@@ -677,7 +898,7 @@ static int wifi_debug_save_cfg(int argc, char *argv[])
+ {
+     struct rt_wlan_cfg_info cfg_info;
+     int len;
+-    char *ssid = RT_NULL, *password = RT_NULL;
++    char *ssid = RT_NULL;
+ 
+     rt_memset(&cfg_info, 0, sizeof(cfg_info));
+     INVALID_INFO(&cfg_info.info);
+@@ -685,11 +906,6 @@ static int wifi_debug_save_cfg(int argc, char *argv[])
+     {
+         ssid = argv[1];
+     }
+-    else if (argc == 3)
+-    {
+-        ssid = argv[1];
+-        password = argv[2];
+-    }
+     else
+     {
+         return -1;
+@@ -707,17 +923,6 @@ static int wifi_debug_save_cfg(int argc, char *argv[])
+         cfg_info.info.ssid.len = len;
+     }
+ 
+-    if (password != RT_NULL)
+-    {
+-        len = rt_strlen(password);
+-        if (len > RT_WLAN_PASSWORD_MAX_LENGTH)
+-        {
+-            rt_kprintf("password is to long");
+-            return 0;
+-        }
+-        rt_memcpy(&cfg_info.key.val[0], password, len);
+-        cfg_info.key.len = len;
+-    }
+ #ifdef RT_WLAN_CFG_ENABLE
+     rt_wlan_cfg_save(&cfg_info);
+ #endif
+diff --git a/components/drivers/wlan/dev_wlan_mgnt.c b/components/drivers/wlan/dev_wlan_mgnt.c
+index b5cb3959..3a73be0e 100644
+--- a/components/drivers/wlan/dev_wlan_mgnt.c
++++ b/components/drivers/wlan/dev_wlan_mgnt.c
+@@ -119,6 +119,16 @@ static struct rt_wlan_event_desc event_tab[RT_WLAN_EVT_MAX];
+ static struct rt_wlan_complete_des *complete_tab[5];
+ static struct rt_mutex complete_mutex;
+ 
++static void wlan_sensitive_clear(void *data, rt_size_t length)
++{
++    volatile rt_uint8_t *byte = (volatile rt_uint8_t *)data;
++
++    while (length--)
++    {
++        *byte++ = 0;
++    }
++}
++
+ #ifdef RT_WLAN_AUTO_CONNECT_ENABLE
+ static struct rt_timer reconnect_time;
+ #endif
+@@ -184,6 +194,7 @@ static void rt_wlan_mgnt_work(void *parameter)
+     {
+     case RT_WLAN_EVT_STA_CONNECTED:
+     {
++#ifdef RT_WLAN_CFG_ENABLE
+         struct rt_wlan_cfg_info cfg_info;
+ 
+         rt_memset(&cfg_info, 0, sizeof(cfg_info));
+@@ -195,10 +206,9 @@ static void rt_wlan_mgnt_work(void *parameter)
+             cfg_info.key = _sta_mgnt.key;
+             rt_exit_critical();
+             RT_WLAN_LOG_D("run save config! ssid:%s len%d", _sta_mgnt.info.ssid.val, _sta_mgnt.info.ssid.len);
+-#ifdef RT_WLAN_CFG_ENABLE
+             rt_wlan_cfg_save(&cfg_info);
+-#endif
+         }
++#endif
+         break;
+     }
+     default :
+@@ -889,7 +899,7 @@ rt_err_t rt_wlan_connect(const char *ssid, const char *password)
+     {
+         return -RT_EIO;
+     }
+-    RT_WLAN_LOG_D("%s is run ssid:%s password:%s", __FUNCTION__, ssid, password);
++    RT_WLAN_LOG_D("%s is run ssid:%s", __FUNCTION__, ssid);
+     if (ssid == RT_NULL)
+     {
+         RT_WLAN_LOG_E("ssid is null!");
+@@ -968,9 +978,11 @@ rt_err_t rt_wlan_connect(const char *ssid, const char *password)
+     if (!(recved & set))
+     {
+         RT_WLAN_LOG_I("wifi connect failed!");
++        wlan_sensitive_clear(&_sta_mgnt.key, sizeof(_sta_mgnt.key));
+         MGNT_UNLOCK();
+         return -RT_ERROR;
+     }
++    wlan_sensitive_clear(&_sta_mgnt.key, sizeof(_sta_mgnt.key));
+     MGNT_UNLOCK();
+     return err;
+ }
+@@ -989,14 +1001,14 @@ rt_err_t rt_wlan_connect_adv(struct rt_wlan_info *info, const char *password)
+         RT_WLAN_LOG_E("info is null!");
+         return -RT_EINVAL;
+     }
+-    RT_WLAN_LOG_D("%s is run ssid:%s password:%s", __FUNCTION__, info->ssid.val, password);
++    RT_WLAN_LOG_D("%s is run ssid:%s", __FUNCTION__, info->ssid.val);
+     /* Parameter checking */
+     if (password != RT_NULL)
+     {
+         password_len = rt_strlen(password);
+         if (password_len > RT_WLAN_PASSWORD_MAX_LENGTH)
+         {
+-            RT_WLAN_LOG_E("password is to long! password:%s len:%d", password, password_len);
++            RT_WLAN_LOG_E("password is too long (limit %d bytes)", RT_WLAN_PASSWORD_MAX_LENGTH);
+             return -RT_EINVAL;
+         }
+     }
+@@ -1243,7 +1255,7 @@ rt_err_t rt_wlan_start_ap(const char *ssid, const char *password)
+     if (ssid == RT_NULL) return -RT_EINVAL;
+ 
+     rt_memset(&info, 0, sizeof(struct rt_wlan_info));
+-    RT_WLAN_LOG_D("%s is run ssid:%s password:%s", __FUNCTION__, ssid, password);
++    RT_WLAN_LOG_D("%s is run ssid:%s", __FUNCTION__, ssid);
+     if (password)
+     {
+         info.security = SECURITY_WPA2_AES_PSK;
+@@ -1276,6 +1288,7 @@ rt_err_t rt_wlan_start_ap(const char *ssid, const char *password)
+     {
+         rt_wlan_complete_delete(complete);
+         RT_WLAN_LOG_I("start ap failed!");
++        wlan_sensitive_clear(&_ap_mgnt.key, sizeof(_ap_mgnt.key));
+         MGNT_UNLOCK();
+         return err;
+     }
+@@ -1286,6 +1299,7 @@ rt_err_t rt_wlan_start_ap(const char *ssid, const char *password)
+     /* Check whether there is a waiting event */
+     rt_wlan_complete_wait(complete, set, RT_WLAN_START_AP_WAIT_MS, &recved);
+     rt_wlan_complete_delete(complete);
++    wlan_sensitive_clear(&_ap_mgnt.key, sizeof(_ap_mgnt.key));
+     /* check event */
+     set = 0x1 << RT_WLAN_DEV_EVT_AP_START;
+     if (!(recved & set))
+diff --git a/components/net/lwip/Kconfig b/components/net/lwip/Kconfig
+index 374f4d56..34916874 100644
+--- a/components/net/lwip/Kconfig
++++ b/components/net/lwip/Kconfig
+@@ -107,6 +107,18 @@ if RT_USING_LWIP
+         bool "UDP protocol"
+         default y
+ 
++    config RT_LWIP_SNTP
++        bool "Enable lwIP SNTP client for UTC synchronization"
++        depends on RT_USING_LWIP203
++        select RT_LWIP_DNS
++        select RT_LWIP_UDP
++        select RT_USING_RTC
++        select RT_USING_SOFT_RTC
++        default n
++        help
++            Build the lwIP 2.0.3 SNTP client and use RT-Thread's software RTC.
++            Synchronization is started explicitly by the application.
++
+     config RT_LWIP_TCP
+         bool "TCP protocol"
+         default y
+diff --git a/components/net/lwip/lwip-2.0.3/SConscript b/components/net/lwip/lwip-2.0.3/SConscript
+index 856194f6..5947453e 100644
+--- a/components/net/lwip/lwip-2.0.3/SConscript
++++ b/components/net/lwip/lwip-2.0.3/SConscript
+@@ -80,6 +80,9 @@ if GetDepend(['RT_USING_LWIP_IPV6']):
+ if GetDepend(['RT_LWIP_USING_PING']):
+     src += Glob('src/apps/ping/ping.c')
+ 
++if GetDepend(['RT_LWIP_SNTP']):
++    src += ['src/apps/sntp/sntp.c']
++
+ group = DefineGroup('lwIP', src, depend = ['RT_USING_LWIP', 'RT_USING_LWIP203'], CPPPATH = path)
+ 
+ Return('group')
+diff --git a/components/net/lwip/lwip-2.0.3/src/apps/sntp/sntp.c b/components/net/lwip/lwip-2.0.3/src/apps/sntp/sntp.c
+index 71b2abed..566ad6be 100644
+--- a/components/net/lwip/lwip-2.0.3/src/apps/sntp/sntp.c
++++ b/components/net/lwip/lwip-2.0.3/src/apps/sntp/sntp.c
+@@ -545,8 +545,9 @@ sntp_init(void)
+ 
+   if (sntp_pcb == NULL) {
+     sntp_pcb = udp_new_ip_type(IPADDR_TYPE_ANY);
+-    LWIP_ASSERT("Failed to allocate udp pcb for sntp client", sntp_pcb != NULL);
+-    if (sntp_pcb != NULL) {
++    if (sntp_pcb == NULL) {
++      LWIP_DEBUGF(SNTP_DEBUG_SERIOUS, ("sntp_init: unable to allocate UDP PCB\n"));
++    } else {
+       udp_recv(sntp_pcb, sntp_recv, NULL);
+ 
+       if (sntp_opmode == SNTP_OPMODE_POLL) {
+diff --git a/components/net/lwip/port/lwipopts.h b/components/net/lwip/port/lwipopts.h
+index b9b841b8..4cbc0f4d 100644
+--- a/components/net/lwip/port/lwipopts.h
++++ b/components/net/lwip/port/lwipopts.h
+@@ -23,6 +23,28 @@
+ #include <sys/errno.h>
+ #define LWIP_ERRNO_INCLUDE "sys/errno.h"
+ 
++#ifdef RT_LWIP_SNTP
++/*
++ * The originate timestamp is a request correlation token only. It is based on
++ * monotonic RT-Thread ticks and is never exposed as UTC or sensor time.
++ */
++extern void bca_sntp_set_system_time(unsigned long seconds, unsigned long microseconds);
++extern void bca_sntp_get_request_time(unsigned long *seconds, unsigned long *microseconds);
++#define SNTP_SERVER_DNS             1
++#define SNTP_MAX_SERVERS            1
++#define SNTP_GET_SERVERS_FROM_DHCP  0
++#define SNTP_CHECK_RESPONSE         2
++#define SNTP_RECV_TIMEOUT           3000
++#define SNTP_RETRY_TIMEOUT          3000
++#define SNTP_RETRY_TIMEOUT_MAX      12000
++#define SNTP_RETRY_TIMEOUT_EXP      1
++#define SNTP_UPDATE_DELAY           3600000
++#define SNTP_SET_SYSTEM_TIME_US(sec, us) \
++    bca_sntp_set_system_time((unsigned long)(sec), (unsigned long)(us))
++#define SNTP_GET_SYSTEM_TIME(sec, us) \
++    bca_sntp_get_request_time(&(sec), &(us))
++#endif /* RT_LWIP_SNTP */
++
+ #define LWIP_TIMEVAL_PRIVATE    0
+ #define LWIP_NO_UNISTD_H        0
+ #define LWIP_NO_STDDEF_H        0

@@ -1,0 +1,27 @@
+diff --git a/icm20608.c b/icm20608.c
+--- a/icm20608.c
++++ b/icm20608.c
+@@ -542,7 +542,10 @@
+         rt_uint8_t args;
+ 
+         result = read_regs(dev->i2c, ICM20608_GYRO_CONFIG_REG, 1, &args);
+-        *value = (args >> 3) & 0x3;
++        if (result == RT_EOK)
++        {
++            *value = (args >> 3) & 0x3;
++        }
+         break;
+     }
+     case ICM20608_ACCEL_CONFIG1:
+@@ -550,7 +553,10 @@
+         rt_uint8_t args;
+ 
+         result = read_regs(dev->i2c, ICM20608_ACCEL_CONFIG1_REG, 1, &args);
+-        *value = (args >> 3) & 0x3;
++        if (result == RT_EOK)
++        {
++            *value = (args >> 3) & 0x3;
++        }
+         break;
+     }
+     case ICM20608_ACCEL_CONFIG2:

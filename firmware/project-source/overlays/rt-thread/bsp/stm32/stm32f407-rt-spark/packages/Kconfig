@@ -1,0 +1,25 @@
+menu "Locally available package configuration"
+
+config PKG_USING_RW007
+    bool "rw007: RT-Thread SPI Wi-Fi driver"
+    default n
+    select RT_USING_WIFI
+    select RT_USING_LWIP
+    select RT_LWIP_DNS
+    select RT_LWIP_DHCP
+    select RT_LWIP_UDP
+    select RT_LWIP_TCP
+    select RT_USING_SYSTEM_WORKQUEUE
+    select RT_USING_PIN
+
+if PKG_USING_RW007
+    config RW007_USING_STM32_DRIVERS
+        bool "Use the RW007 STM32 port"
+        default y
+
+    config RW007_SPI_BUS_NAME
+        string "RW007 SPI bus device name"
+        default "spi2"
+endif
+
+endmenu

@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+:root { color-scheme: light; }
+
+body {
+  background: #f6f8fb;
+  color: #18324e;
+  font-family: "Segoe UI Variable", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+
+::selection { background: #cce1f5; color: #133f66; }
