@@ -20,12 +20,45 @@ Acceleration is in metres per second squared; angular velocity is in radians per
 
 ## Start on Windows PowerShell
 
-Run these from the `backend` folder. The virtual environment keeps Python packages local to this project.
+For a fresh clone, run these from the `backend` folder. The virtual
+environment keeps Python packages local to this project. If this is an
+existing checkout moved after its environment was created, use the recovery
+procedure below instead of reusing or updating that moved environment.
 
 ```powershell
 py -3.13 -m venv .venv_lab3
 .\.venv_lab3\Scripts\python.exe -m pip install -r requirements.txt
 ```
+
+## Recovering a virtual environment after moving the checkout
+
+Python virtual environments are not reliably relocatable. A moved Windows
+environment can retain the old absolute project path in `pyvenv.cfg` and in
+generated command launchers. The Python executable may still run while a
+launcher such as `amqtt.exe` fails. Do not edit those generated files or
+delete the old environment as part of recovery.
+
+From `backend/`, create a second environment and install the pinned backend
+requirements into it:
+
+```powershell
+py -3.13 -m venv .venv_lab3_rebuilt
+.\.venv_lab3_rebuilt\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Keep the original environment until the replacement has been checked. Use
+the replacement's commands from separate terminals in `backend/`:
+
+```powershell
+.\.venv_lab3_rebuilt\Scripts\amqtt.exe -c broker.yaml
+.\.venv_lab3_rebuilt\Scripts\python.exe app.py
+.\.venv_lab3_rebuilt\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+Use `.venv_lab3_rebuilt\Scripts\python.exe` for the simulator as well. The
+existing `broker.yaml` and SQLite database are separate local data files;
+this procedure does not replace them. A fresh clone can continue using the
+standard `.venv_lab3` setup above.
 
 If `broker.yaml` does not exist, create a local copy from the example, then
 replace the example private address with the laptop's current private Wi-Fi

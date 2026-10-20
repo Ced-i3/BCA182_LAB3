@@ -95,7 +95,10 @@ show the dashboard's unavailable/empty states, but cannot produce genuine live
 sensor readings.
 
 From the repository root in PowerShell, install the backend and copy its
-local-only broker example:
+local-only broker example. If this working copy was moved after its virtual
+environment was created, follow the
+[backend virtual environment recovery procedure](backend/README.md#recovering-a-virtual-environment-after-moving-the-checkout)
+instead of reusing that environment.
 
 ```powershell
 Set-Location backend
