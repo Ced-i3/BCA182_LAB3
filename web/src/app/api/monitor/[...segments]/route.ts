@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server.js";
 import {
   parseActivityHistory, parseActivityLatest, parseHealth, parseLatestReading,
   parseReadingHistory,
-} from "@/lib/api/contracts";
+} from "../../../../lib/api/contracts.ts";
 
 const allowedPaths: Record<string, string> = {
   health: "/health",

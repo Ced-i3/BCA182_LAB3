@@ -9,7 +9,7 @@
     "start": "next start --hostname 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "node --test --test-isolation=none src/lib/api/contracts.test.ts"
+    "test": "node --test --test-isolation=none --test-concurrency=1 src/lib/api/contracts.test.ts src/lib/api/monitor-proxy.test.ts"
   },
   "dependencies": {
     "next": "16.4.2",
