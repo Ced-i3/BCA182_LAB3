@@ -472,6 +472,10 @@ work, subject to suitable access, security, and resources.
 
 ## Credits and third-party licenses
 
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the pinned firmware
+components, inspected upstream license files, attribution requirements, and
+unresolved RW007 licensing question.
+
 The proposed public source package contains patches and overlays, while its
 manifest fetches the upstream RT-Thread and driver repositories at pinned
 commits. Preserve their license and copyright notices. RT-Thread,
