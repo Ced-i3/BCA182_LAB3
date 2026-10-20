@@ -381,6 +381,10 @@ state. It must not show old sensor data or an old prediction as live.
 Backend tests use isolated temporary databases and do not need a running MQTT
 broker:
 
+See [VALIDATION.md](VALIDATION.md) for the current software-check results,
+historical firmware and data-flow evidence, reproduction steps, and remaining
+validation limits.
+
 ```powershell
 Set-Location backend
 .\.venv_lab3\Scripts\python.exe -m unittest discover -s tests -v
