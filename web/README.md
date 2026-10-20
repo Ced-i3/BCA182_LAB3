@@ -8,9 +8,10 @@ A read-only, responsive frontend for the BCA152 Lab 3 RT-Spark activity-monitori
 - Node.js 20.9 or later (the project was built with Node.js 24)
 - Existing Flask backend for live data; the existing MQTT broker and STM32 stream are needed for **new** readings
 
-Run all frontend commands from `BCA152_LAB3\web` in PowerShell:
+From the project root, enter the `web` folder before running frontend commands:
 
 ```powershell
+Set-Location .\web
 npm.cmd ci
 npm.cmd run dev
 ```
@@ -37,14 +38,23 @@ BACKEND_URL=http://127.0.0.1:5000
 
 Copy `.env.example` to `.env.local` as a starting point. Do not use a `NEXT_PUBLIC_` variable for this address. The proxy accepts only `/health`, `/api/latest`, `/api/history`, `/api/activity/latest`, and `/api/activity/history`; it does not accept an arbitrary destination. Production builds without `BACKEND_URL` show an unavailable state.
 
-If Flask is not already running, check `http://127.0.0.1:5000/health` first. From `BCA152_LAB3\backend`, start the existing broker and backend **only if they are not already running**:
+If Flask is not already running, check `http://127.0.0.1:5000/health` first. Start only services that are not already running. Open two PowerShell terminals from the project root and enter `backend` in each:
+
+In the first terminal, start the MQTT broker:
 
 ```powershell
+Set-Location .\backend
 .\.venv_lab3\Scripts\amqtt.exe -c broker.yaml
+```
+
+In the second terminal, start Flask and its MQTT subscriber:
+
+```powershell
+Set-Location .\backend
 .\.venv_lab3\Scripts\python.exe app.py
 ```
 
-Use separate terminals. A broker connection alone does not mean the STM32 is streaming. The frontend never sends MQTT commands or changes the database.
+A broker connection alone does not mean the STM32 is streaming. The frontend never sends MQTT commands or changes the database.
 
 ## What the dashboard shows
 
