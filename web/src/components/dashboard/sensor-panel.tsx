@@ -2,10 +2,10 @@ import type { ReadingHistoryResponse, SensorReading } from "@/lib/api/contracts"
 import { localTime } from "@/lib/utils/status";
 
 function Vector({ values, unit }: { values: { x: number; y: number; z: number }; unit: string }) {
-  return <div className="grid grid-cols-3 gap-2 sm:gap-3">
-    {(["x", "y", "z"] as const).map((axis) => <div key={axis} className="min-w-0 rounded-xl bg-[#f4f7fa] px-3 py-3 sm:px-4">
+  return <div className="grid grid-cols-3 gap-1 sm:gap-3">
+    {(["x", "y", "z"] as const).map((axis) => <div key={axis} className="min-w-0 rounded-xl bg-[#f4f7fa] px-2 py-3 sm:px-4">
       <div className="text-xs font-semibold text-[#62758a]">{axis.toUpperCase()} axis</div>
-      <div className="mt-1 truncate font-mono text-lg font-semibold tabular-nums tracking-tight text-[#1d3d5d] sm:text-xl" title={`${values[axis]} ${unit}`}>
+      <div className="mt-1 truncate font-mono text-base font-semibold tabular-nums tracking-tight text-[#1d3d5d] sm:text-xl" title={`${values[axis]} ${unit}`}>
         {values[axis].toFixed(3)}
       </div>
     </div>)}

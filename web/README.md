@@ -77,43 +77,62 @@ All predictions are experimental. The walking/running Decision Tree was trained 
 
 ## Vercel frontend deployment
 
-Vercel is intended to host this Next.js frontend only. The Flask API, MQTT
-broker, classifier, and SQLite database stay on the laptop. A Vercel function
-cannot reach the laptop through `127.0.0.1`, so a deployed page without a
-separately designed and secured backend will load but show the backend as
-disconnected and have no live laptop data. This frontend-only deployment does
-not satisfy the laboratory guide's cloud-backend requirement; see the root
-README's deployment limitations.
+Vercel will host this Next.js frontend only. The local Flask API, MQTT broker,
+classifier, and SQLite database stay on the laptop. The existing proxy is
+same-origin, read-only, and allowlists five API paths. It cannot reach the
+laptop through `127.0.0.1` from a Vercel function.
 
-These are preparation instructions only. Do not publish the repository or
-create a Vercel deployment until those actions are separately approved.
+### Verified project settings
 
-After publication is approved, import the repository into Vercel and use these
-project settings:
+- **Root Directory:** `web` (the app and `package-lock.json` are here).
+- **Framework Preset:** Next.js, detected automatically.
+- **Node.js:** `24.x`. This matches the local Node.js 24 build and is a current
+  Vercel runtime. See [Vercel's supported Node.js versions](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions).
+- **Install Command:** leave Vercel's detected npm command.
+- **Build Command:** leave the Next.js default (`next build`).
+- **Output Directory:** leave the Next.js default; do not set `out`.
+- **Environment Variables:** leave empty for this frontend-only deployment.
+  In particular, do not set `BACKEND_URL` or `NEXT_PUBLIC_BACKEND_URL`.
+- No `vercel.json` or custom build/output configuration is needed. See
+  [Vercel monorepo settings](https://vercel.com/docs/monorepos) and
+  [build configuration](https://vercel.com/docs/builds/configure-a-build).
 
-1. Set **Root Directory** to `web/`, because the Next.js app and its lockfile
-   are in that directory. See [Vercel's monorepo root-directory guide](https://vercel.com/docs/monorepos).
-2. Select the detected **Next.js** framework preset and use Node.js **24.x**
-   to match the verified local environment. Vercel currently supports 24.x;
-   see [supported Node.js versions](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions).
-3. Keep the detected install, build, and output settings. The package has a
-   lockfile and a `build` script (`next build`); Vercel detects the Next.js
-   defaults. No custom output directory or `vercel.json` is required. See
-   [Vercel build configuration](https://vercel.com/docs/builds/configure-a-build).
-4. Do not set `BACKEND_URL` for the current frontend-only deployment. In
-   production, the proxy returns HTTP 503 when this variable is absent, and
-   the dashboard reports the backend as disconnected. The automated proxy
-   tests cover this case and a failed upstream request.
-5. Do not set `NEXT_PUBLIC_BACKEND_URL` or put credentials in client-side
-   variables. The proxy reads `BACKEND_URL` on the server. Next.js exposes
-   variables with a `NEXT_PUBLIC_` prefix in browser JavaScript; see the
-   [Next.js environment-variable guidance](https://nextjs.org/docs/app/guides/environment-variables).
+With `BACKEND_URL` absent in production, the proxy returns HTTP 503 without
+making an upstream request. The dashboard still renders and reports the server
+as disconnected; it does not try the laptop's localhost. This state is covered
+by proxy tests and was checked in a local production browser run. A hosted
+frontend without cloud sync will not show live laptop readings.
 
-If a reachable backend is provisioned later, its URL and authentication must
-be designed separately. Configure any approved server-only value in the
-Vercel project's Environment Variables settings, never put credentials or a
-production backend address in committed source or `.env.example`. Changes take
-effect on a new deployment. Do not point this frontend at the laptop's
-localhost or expose Flask or MQTT directly to the public internet or through a
-tunnel. No Vercel project has been created and no deployment has been
-performed.
+The production page was checked at 320, 375, 390, and 430 CSS pixels. It had no
+horizontal overflow; representative six-axis values fit in the sensor cards;
+fresh, stale, history, refresh, and backend-unavailable states were checked.
+The live and stale readings in that browser pass were isolated test fixtures,
+not physical sensor data.
+
+### Import and deploy after approval
+
+1. Authenticate GitHub CLI with `gh auth login -h github.com -p https --web`.
+2. Create the private `BCA182_LAB3` repository from this checkout and push
+   `main` only after repository creation and push are approved.
+3. In Vercel, choose **Add New → Project**, connect the GitHub account, and
+   import the private `BCA182_LAB3` repository. Grant Vercel access to this
+   repository only.
+4. Set **Root Directory** to `web`; choose **Next.js** and **Node.js 24.x**;
+   keep the detected install/build/output settings and leave environment
+   variables empty for the first frontend-only deployment.
+5. Deploy, then open the generated HTTPS production URL on Android over mobile
+   data or another network. The disconnected state is expected until remote
+   sync and dashboard authentication are implemented.
+
+Vercel Hobby is limited to personal, non-commercial use. Its private-repository
+collaboration support is also limited, so the intended arrangement is a
+personal repository imported by its owner. Review the [current Hobby
+terms](https://vercel.com/legal/terms) and [private-repository collaboration
+limits](https://vercel.com/docs/deployments/troubleshoot-project-collaboration)
+before creating the project.
+
+Never point this frontend at the laptop's localhost, expose Flask or MQTT to
+the public internet, or use a tunnel as the backend path. Do not put secrets in
+source, `.env.example`, browser code, or `NEXT_PUBLIC_` variables. See the
+project-root [remote monitoring plan](../REMOTE_MONITORING_PLAN.md) for the
+proposed authenticated cloud synchronization design and exact resources.

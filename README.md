@@ -403,6 +403,10 @@ without a separately authorized hosted or private API design, a deployed page
 will correctly show the backend as unavailable. No tunnel, public Flask
 listener, or public MQTT listener is configured by this project.
 
+See [Vercel deployment and remote monitoring readiness](REMOTE_MONITORING_PLAN.md)
+for the verified Vercel settings, pending GitHub/Vercel steps, and a secure
+cloud-sync design that keeps Flask, MQTT, and SQLite local.
+
 ### Deployment Limitations — Local Server Instead of Cloud Hosting
 
 The laboratory guide originally proposes running the MQTT broker, backend,
