@@ -16,7 +16,8 @@ export function MonitorDashboard({ cloudMode = false }: { cloudMode?: boolean })
   const sensorFresh = (!cloudMode || snapshot.cloud?.state === "live") && recentSensorReading(
     snapshot.reading, nowMs, snapshot.activity?.input_age_seconds, snapshot.fetchedAtMs, cloudMode ? 15 : 5,
   );
-  const deviceId = snapshot.reading?.device_id ?? snapshot.activity?.prediction?.device_id ?? null;
+  const deviceId = snapshot.reading?.device_id ?? snapshot.activity?.prediction?.device_id ??
+    (cloudMode ? snapshot.activity?.device_id_filter : null) ?? null;
 
   return <main className="mx-auto min-h-screen max-w-[1320px] px-4 pb-12 pt-5 sm:px-7 sm:pt-7 lg:px-10">
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[#d9e3ec] pb-5">

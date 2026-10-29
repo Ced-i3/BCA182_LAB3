@@ -31,7 +31,9 @@ test("stale, offline, sync delay and empty states never claim current activity",
     assert.equal(result.cloud?.state, expected);
     assert.equal(result.activity?.current_activity, null);
   }
-  assert.equal(cloudSnapshot("rt-spark-001", [], [], null, now).cloud?.state, "no_data");
+  const empty = cloudSnapshot("rt-spark-001", [], [], null, now);
+  assert.equal(empty.cloud?.state, "no_data");
+  assert.equal(empty.activity?.device_id_filter, "rt-spark-001");
   assert.equal(cloudSnapshot("rt-spark-001", [sensor], [{ ...prediction, created_at: at(30) }], status, now)
     .activity?.current_activity, null);
 });
