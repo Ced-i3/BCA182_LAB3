@@ -19,6 +19,7 @@
 !.env.*.example
 backend/.env
 backend/.env.*
+!backend/.env.example
 web/.env.local
 web/.env.*.local
 
