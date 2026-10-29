@@ -36,7 +36,7 @@ class CloudSyncTests(unittest.TestCase):
         self.ok = True
         self.health_ok = True
 
-    def worker(self):
+    def worker(self, include_existing=True):
         def send(url, token, body):
             self.sent.append(body)
             return self.ok
@@ -46,7 +46,8 @@ class CloudSyncTests(unittest.TestCase):
             return {"mqtt_connected": True, "activity_inference": {
                 "status": "running", "model_loaded": True}}
         return CloudSync(self.source, self.state, "rt-spark-001", "x" * 40,
-                         "https://example.test/api/cloud/ingest", sender=send, health=health)
+                         "https://example.test/api/cloud/ingest", include_existing=include_existing,
+                         sender=send, health=health)
 
     def add_sensor(self, row_id, received="2026-10-29T08:00:00.000Z", axis=1.0):
         with closing(sqlite3.connect(self.source)) as db, db:
@@ -132,6 +133,17 @@ class CloudSyncTests(unittest.TestCase):
             worker.sync_once()
             worker.sync_once()
         self.assertEqual([item["readings"][0]["source_id"] for item in self.sent], [1, 1, 2])
+
+    def test_default_first_run_does_not_backfill_existing_rows(self):
+        self.add_sensor(1)
+        self.add_prediction()
+        worker = self.worker(include_existing=False)
+        self.assertEqual(worker.sync_once(), 0)
+        self.assertEqual(self.sent[0]["readings"], [])
+        self.assertEqual(self.sent[0]["predictions"], [])
+        self.add_sensor(2, "2026-10-29T08:00:01.000Z")
+        self.assertEqual(worker.sync_once(), 1)
+        self.assertEqual(self.sent[1]["readings"][0]["source_id"], 2)
 
 
 if __name__ == "__main__":

@@ -46,6 +46,7 @@ def axes(row: sqlite3.Row, prefix: str, maximum: float = 1000) -> dict[str, floa
 class CloudSync:
     def __init__(self, source: Path, state: Path, device_id: str, token: str,
                  endpoint: str, *, batch_size: int = 25, interval: float = 5,
+                 include_existing: bool = False,
                  sender: Callable[[str, str, dict[str, Any]], bool] | None = None,
                  health: Callable[[], dict[str, Any]] | None = None) -> None:
         if not device_id or not token or len(token) < 32 or not endpoint.startswith("https://"):
@@ -69,6 +70,21 @@ class CloudSync:
                     payload TEXT NOT NULL, PRIMARY KEY(kind, source_id)
                 );
             """)
+            if not include_existing:
+                # Establish the first-run fence before polling. Existing source
+                # rows require separate approval for a historical backfill.
+                with closing(self._source()) as source:
+                    for kind, table in (("sensor", "sensor_readings"),
+                                        ("prediction", "activity_predictions")):
+                        columns = "id, received_at" if kind == "sensor" else "id, NULL"
+                        row = source.execute(
+                            f"SELECT {columns} FROM {table} WHERE device_id=? ORDER BY id DESC LIMIT 1",
+                            (device_id,),
+                        ).fetchone()
+                        last_id = row[0] if row else 0
+                        last_second = utc(row[1])[:19] if row and row[1] else None
+                        db.execute("INSERT OR IGNORE INTO cursor VALUES (?,?,?)",
+                                   (kind, last_id, last_second))
 
     def _source(self) -> sqlite3.Connection:
         # URI mode=ro prevents accidental edits to historical records.

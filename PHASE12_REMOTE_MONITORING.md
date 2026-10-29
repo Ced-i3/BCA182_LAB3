@@ -95,10 +95,10 @@ skipped. The worker sends only rows matching `CLOUD_DEVICE_ID`; device ID alone
 does not cryptographically prove physical origin, so do not run the simulator
 under the same ID during a hardware demo.
 
-Initial startup scans the existing history for the selected device. At large
-backlog sizes, catch-up can take time and exceed cloud quotas. Review the
-source row count and cloud quota before the first real sync; do not clear the
-state or delete local records to speed it up. The worker sends a heartbeat
+Initial startup fences off existing history and mirrors only new rows. Historical
+backfill requires separate owner approval. After startup, an offline backlog
+still catches up from the durable cursor when connectivity returns. Do not clear
+the state or delete local records to speed it up. The worker sends a heartbeat
 even when there are no new events, including an explicit backend-offline flag
 when Flask cannot be reached.
 
@@ -142,3 +142,17 @@ to archive, reject, or briefly retain them before enabling any cleanup.
 
 Until these steps pass, the cloud code is a locally tested integration, not a
 verified working remote monitor.
+
+## Production rollback
+
+Before activation, record the current Vercel production deployment ID and keep
+it available. If the cloud deployment fails, use Vercel's **Instant Rollback**
+to the immediately previous production deployment (or `vercel rollback` from
+the linked project), then verify the original dashboard URL. On the Hobby
+plan, only the immediately previous production deployment is eligible for this
+rollback. This changes routing to the old build without deleting Supabase or
+SQLite records. Stop the laptop sync worker if cloud ingestion is failing.
+After rollback, inspect Vercel's production-domain auto-assignment setting
+before any later push: rollback can disable automatic assignment. Do not delete
+cloud rows or local sync state as part of rollback. See the
+[Vercel rollback guide](https://vercel.com/docs/deployments/rollback-production-deployment).
