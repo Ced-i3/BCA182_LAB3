@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { monitorApi } from "@/lib/api/client";
 import type {
   ActivityHistoryResponse, ActivityLatestResponse, HealthResponse,
@@ -33,7 +32,6 @@ function settledValue<T>(result: PromiseSettledResult<T>): T | null {
 }
 
 export function useMonitor(cloudMode = false): { snapshot: MonitorSnapshot; loading: boolean; nowMs: number } {
-  const router = useRouter();
   const [snapshot, setSnapshot] = useState<MonitorSnapshot>(initial);
   const [loading, setLoading] = useState(true);
   const [nowMs, setNowMs] = useState(() => Date.now());
@@ -48,8 +46,7 @@ export function useMonitor(cloudMode = false): { snapshot: MonitorSnapshot; load
       const signal = controller.signal;
       if (cloudMode) {
         try {
-          const response = await fetch("/api/cloud/monitor", { cache: "no-store", signal });
-          if (response.status === 401) { router.push("/login"); router.refresh(); return; }
+          const response = await fetch("/api/cloud/monitor", { signal });
           if (!response.ok) throw new Error("Cloud unavailable");
           const result = await response.json() as MonitorSnapshot;
           if (active) setSnapshot(result);
@@ -105,7 +102,7 @@ export function useMonitor(cloudMode = false): { snapshot: MonitorSnapshot; load
       clearTimeout(timer);
       clearInterval(clock);
     };
-  }, [cloudMode, router]);
+  }, [cloudMode]);
 
   return { snapshot, loading, nowMs };
 }

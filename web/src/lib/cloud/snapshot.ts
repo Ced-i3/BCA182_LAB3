@@ -29,7 +29,7 @@ export function cloudSnapshot(deviceId: string, sensorRows: Row[], predictionRow
   const deviceFresh = sensorAge !== null && sensorAge <= 15 && status?.mqtt_connected === true;
   const state: CloudState = !newest && !lastSensor ? "no_data" : !synced ? "sync_delayed" :
     !backendFresh || status?.backend_online !== true ? "backend_offline" : !deviceFresh ? "device_offline" : "live";
-  const inference = { status: typeof status?.inference_status === "string" ? status.inference_status : "unavailable",
+  const inference = { status: status?.inference_status === "running" ? "running" : "unavailable",
     model_loaded: status?.model_loaded === true };
   const health: HealthResponse = { status: state === "live" ? "ok" : "degraded",
     mqtt_connected: status?.mqtt_connected === true && backendFresh && synced, activity_inference: inference };

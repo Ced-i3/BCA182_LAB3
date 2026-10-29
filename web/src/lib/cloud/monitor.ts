@@ -1,26 +1,34 @@
 import { cloudSnapshot } from "./snapshot.ts";
 
+export const PUBLIC_DEVICE_ID = "rt-spark-001";
+const responseHeaders = { "Cache-Control": "public, max-age=0, s-maxage=3, must-revalidate",
+  "X-Content-Type-Options": "nosniff" };
+const errorHeaders = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
 type Row = Record<string, unknown>;
-export interface CloudReader {
-  claims(): Promise<string | null>;
-  firstDevice(owner: string): Promise<string | null>;
-  sensors(owner: string, device: string): Promise<Row[]>;
-  predictions(owner: string, device: string): Promise<Row[]>;
-  status(owner: string, device: string): Promise<Row | null>;
+
+export interface PublicCloudReader {
+  registered(device: string): Promise<boolean>;
+  sensors(device: string): Promise<Row[]>;
+  predictions(device: string): Promise<Row[]>;
+  status(device: string): Promise<Row | null>;
 }
 
-export async function serveCloudMonitor(reader: CloudReader): Promise<Response> {
-  const headers = { "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" };
+export async function serveCloudMonitor(reader: PublicCloudReader, request: Request): Promise<Response> {
+  if (new URL(request.url).search) {
+    return Response.json({ error: "Query parameters are not supported." }, { status: 400, headers: errorHeaders });
+  }
   try {
-    const owner = await reader.claims();
-    if (!owner) return Response.json({ error: "Sign-in required." }, { status: 401, headers });
-    const device = await reader.firstDevice(owner);
-    if (!device) return Response.json({ error: "No device assigned." }, { status: 403, headers });
+    if (!await reader.registered(PUBLIC_DEVICE_ID)) {
+      return Response.json({ error: "Monitoring unavailable." }, { status: 503, headers: errorHeaders });
+    }
     const [sensors, predictions, status] = await Promise.all([
-      reader.sensors(owner, device), reader.predictions(owner, device), reader.status(owner, device),
+      reader.sensors(PUBLIC_DEVICE_ID), reader.predictions(PUBLIC_DEVICE_ID), reader.status(PUBLIC_DEVICE_ID),
     ]);
-    return Response.json(cloudSnapshot(device, sensors, predictions, status), { headers });
+    return Response.json(cloudSnapshot(PUBLIC_DEVICE_ID,
+      sensors.filter(row => row.device_id === PUBLIC_DEVICE_ID).slice(0, 10),
+      predictions.filter(row => row.device_id === PUBLIC_DEVICE_ID).slice(0, 8), status),
+      { headers: responseHeaders });
   } catch {
-    return Response.json({ error: "Cloud service unavailable." }, { status: 503, headers });
+    return Response.json({ error: "Cloud service unavailable." }, { status: 503, headers: errorHeaders });
   }
 }

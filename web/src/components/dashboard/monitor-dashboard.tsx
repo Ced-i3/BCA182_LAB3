@@ -6,7 +6,6 @@ import { HistoryPanel } from "./history-panel";
 import { SystemPanel } from "./system-panel";
 import { useMonitor } from "@/hooks/use-monitor";
 import { currentActivity, recentSensorReading } from "@/lib/utils/status";
-import { SignOut } from "./sign-out";
 
 export function MonitorDashboard({ cloudMode = false }: { cloudMode?: boolean }) {
   const { snapshot, loading, nowMs } = useMonitor(cloudMode);
@@ -28,7 +27,6 @@ export function MonitorDashboard({ cloudMode = false }: { cloudMode?: boolean })
         <div className="min-w-0"><p className="text-xs font-semibold text-[#54708a]">BCA152 Lab 3</p><h1 className="truncate text-xl font-bold tracking-[-0.025em] text-[#17314d] sm:text-2xl">Activity Monitor</h1></div>
       </div>
       <div className="flex flex-wrap items-center gap-3 text-sm">
-        {cloudMode && <SignOut />}
         <span className="max-w-[190px] truncate rounded-full border border-[#d6e1ec] bg-white px-3 py-1.5 font-medium text-[#4b647c]" title={deviceId ?? "Device unknown"}>{deviceId ?? "Device unknown"}</span>
         <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-semibold ${backendOnline && !backendUnhealthy ? "bg-[#e8f5ef] text-[#226b52]" : "bg-[#f0f3f6] text-[#657488]"}`}>
           <span className={`h-2 w-2 rounded-full ${backendOnline && !backendUnhealthy ? "bg-[#318168]" : "bg-[#9caab8]"}`} aria-hidden="true" />
