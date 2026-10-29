@@ -17,13 +17,14 @@ export function recentSensorReading(
   nowMs: number,
   inputAgeSeconds: number | null = null,
   fetchedAtMs: number | null = null,
+  staleAfterSeconds = 5,
 ): boolean {
   if (!reading) return false;
   if (inputAgeSeconds !== null && fetchedAtMs !== null) {
-    return inputAgeSeconds + Math.max(0, (nowMs - fetchedAtMs) / 1000) <= 5;
+    return inputAgeSeconds + Math.max(0, (nowMs - fetchedAtMs) / 1000) <= staleAfterSeconds;
   }
   const age = nowMs - Date.parse(reading.received_at);
-  return age >= -2000 && age <= 5000;
+  return age >= -2000 && age <= staleAfterSeconds * 1000;
 }
 
 export function localTime(timestamp: string | null | undefined): string {

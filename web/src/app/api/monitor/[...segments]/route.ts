@@ -66,6 +66,8 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ segments: string[] }> },
 ) {
+  if (process.env.CLOUD_MONITOR_MODE === "cloud")
+    return NextResponse.json({ error: "Local monitoring proxy disabled in cloud mode." }, { status: 404 });
   const { segments } = await context.params;
   const key = segments.join("/");
   const path = allowedPaths[key];

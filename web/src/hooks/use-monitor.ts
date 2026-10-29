@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { monitorApi } from "@/lib/api/client";
 import type {
   ActivityHistoryResponse, ActivityLatestResponse, HealthResponse,
@@ -17,6 +18,8 @@ export interface MonitorSnapshot {
   history: ActivityHistoryResponse | null;
   fetchedAtMs: number | null;
   errors: { health: boolean; reading: boolean; readings: boolean; activity: boolean; history: boolean };
+  cloud?: { state: "live" | "device_offline" | "backend_offline" | "sync_delayed" | "no_data" | "unavailable";
+    lastSyncAt: string | null; lastBackendAt: string | null };
 }
 
 const initial: MonitorSnapshot = {
@@ -29,7 +32,8 @@ function settledValue<T>(result: PromiseSettledResult<T>): T | null {
   return result.status === "fulfilled" ? result.value : null;
 }
 
-export function useMonitor(): { snapshot: MonitorSnapshot; loading: boolean; nowMs: number } {
+export function useMonitor(cloudMode = false): { snapshot: MonitorSnapshot; loading: boolean; nowMs: number } {
+  const router = useRouter();
   const [snapshot, setSnapshot] = useState<MonitorSnapshot>(initial);
   const [loading, setLoading] = useState(true);
   const [nowMs, setNowMs] = useState(() => Date.now());
@@ -42,6 +46,24 @@ export function useMonitor(): { snapshot: MonitorSnapshot; loading: boolean; now
     async function poll() {
       controller = new AbortController();
       const signal = controller.signal;
+      if (cloudMode) {
+        try {
+          const response = await fetch("/api/cloud/monitor", { cache: "no-store", signal });
+          if (response.status === 401) { router.push("/login"); router.refresh(); return; }
+          if (!response.ok) throw new Error("Cloud unavailable");
+          const result = await response.json() as MonitorSnapshot;
+          if (active) setSnapshot(result);
+        } catch {
+          if (active && !signal.aborted) setSnapshot(previous => ({ ...previous,
+            health: null, activity: null, fetchedAtMs: Date.now(),
+            cloud: { state: "unavailable", lastSyncAt: previous.cloud?.lastSyncAt ?? null,
+              lastBackendAt: previous.cloud?.lastBackendAt ?? null },
+            errors: { health: true, reading: true, readings: true, activity: true, history: true },
+          }));
+        }
+        if (active) { setLoading(false); timer = setTimeout(poll, 5000); }
+        return;
+      }
       const [health, reading, readings] = await Promise.allSettled([
         monitorApi.health(signal),
         monitorApi.latestReading(signal),
@@ -83,7 +105,7 @@ export function useMonitor(): { snapshot: MonitorSnapshot; loading: boolean; now
       clearTimeout(timer);
       clearInterval(clock);
     };
-  }, []);
+  }, [cloudMode, router]);
 
   return { snapshot, loading, nowMs };
 }
