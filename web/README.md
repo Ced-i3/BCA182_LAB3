@@ -33,6 +33,20 @@ npm.cmd run build
 npm.cmd run start
 ```
 
+## Temporary public cloud demo
+
+Set `CLOUD_MONITOR_MODE=cloud` in the existing Vercel project to serve the
+dashboard directly at `/`, without a login page. `GET /api/cloud/monitor` is a
+read-only snapshot for the one registered device, `rt-spark-001`; it rejects
+query parameters and never exposes owner IDs or Supabase credentials. The
+Supabase tables still have owner-only RLS, and uploads still require the
+dedicated ingest token. The public snapshot uses a server-only Supabase secret
+and a three-second CDN cache. Configure `SUPABASE_URL`, `SUPABASE_SECRET_KEY`,
+and `CLOUD_INGEST_TOKEN_HASHES` as server-side Vercel values. No `NEXT_PUBLIC_`
+Supabase values are needed. See `PHASE12_REMOTE_MONITORING.md` for startup,
+rollback, and shutdown steps. Anyone with the URL can view this device's
+sensor data during the demo.
+
 ## Connect to Flask locally
 
 The Next.js server proxies five known read-only paths to Flask. Browser requests stay on the Next.js origin, so Flask CORS and its localhost binding need no change. In development, the server defaults to `http://127.0.0.1:5000`. Set `BACKEND_URL` in `web\.env.local` if your Flask address differs:

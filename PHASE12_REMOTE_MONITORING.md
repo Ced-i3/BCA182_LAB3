@@ -1,5 +1,66 @@
 # Phase 12 remote monitoring setup
 
+## Temporary public university demo (current implementation)
+
+The cloud dashboard at the existing Vercel project opens without a viewer login
+when `CLOUD_MONITOR_MODE=cloud`. `GET /api/cloud/monitor` publicly returns a
+bounded, read-only snapshot for the single enabled `rt-spark-001` device. The
+server queries only approved sensor, prediction, and heartbeat columns using a
+server-only Supabase secret; requests cannot choose a device, owner, table, or
+query. The response is cached at the CDN for at most three seconds and polled
+every five seconds. Errors are not cached. Stored readings are marked stale or
+offline when the heartbeat and sync timestamps expire. The experimental model
+label remains visible as history when it is no longer current.
+
+The Supabase tables retain owner-only RLS and no anonymous table grants. The
+token-protected ingest route and durable laptop outbox remain unchanged. Public
+viewers can see the six sensor axes, activity predictions, status, and times for
+this device. Do not use this mode for private monitoring. Supabase Auth may
+remain configured, but the demo website no longer sends magic links or uses
+viewer sessions. The older owner-login deployment notes below describe the
+previous private mode and do not apply to this temporary demo build.
+
+Production needs only `CLOUD_MONITOR_MODE=cloud`, `SUPABASE_URL`,
+`SUPABASE_SECRET_KEY`, and `CLOUD_INGEST_TOKEN_HASHES` as Vercel server-side
+variables. Do not set privileged values with `NEXT_PUBLIC_` names. Keep the
+dedicated token on the laptop. Before deployment, record the current production
+deployment ID for Instant Rollback and verify the public endpoint, invalid
+ingest-token rejection, and browser bundle do not expose secrets.
+
+To demonstrate real data, start the existing broker and Flask in separate
+PowerShell terminals from `backend/`:
+
+```powershell
+.\.venv_lab3\Scripts\amqtt.exe -c broker.yaml
+.\.venv_lab3\Scripts\python.exe app.py
+```
+
+In a third `backend/` terminal, load the private, Git-ignored cloud environment
+for that terminal and run:
+
+```powershell
+foreach ($line in Get-Content .env.cloud.local) {
+  if ($line -match '^([A-Z][A-Z0-9_]*)=(.*)$') {
+    [Environment]::SetEnvironmentVariable($matches[1], $matches[2], 'Process')
+  }
+}
+.\.venv_lab3\Scripts\python.exe cloud_sync.py
+```
+
+On the board console, connect Wi-Fi, wait for valid SNTP time, set the laptop's
+reachable broker IP with `mqtt_config set broker HOST`, then run
+`mqtt_stream start 5`. Do not use the simulated publisher. Open the original
+Vercel URL on Android with Wi-Fi off. Verify fresh timestamps, six axes,
+prediction history, and a current activity only while the stream is fresh.
+
+After the demo, stop `mqtt_stream`, stop the sync worker, and use Vercel Instant
+Rollback to restore the previous production deployment. Remove the production
+cloud environment values, rotate the ingest token, and only then consider
+deleting the temporary Supabase project through its official dashboard after
+exporting any cloud data needed. Project deletion is irreversible; it does not
+delete local SQLite history. Leave the GitHub repository private. No automatic
+cloud-data deletion is enabled.
+
 **Current provisioning status (2026-10-29):** The existing Supabase Free project
 `tpmkknpdvbawulbdaorj` has migration `202610290001_cloud_monitoring` applied.
 All four application tables have RLS enabled, authenticated owner-only SELECT
