@@ -1,5 +1,11 @@
 # Vercel Deployment and Remote Monitoring Readiness
 
+> Historical planning document from 2026-10-22. The private GitHub repository,
+> Vercel frontend, and Phase 12 local cloud code now exist. The Supabase project
+> and production cloud configuration do not. Use
+> [PHASE12_REMOTE_MONITORING.md](PHASE12_REMOTE_MONITORING.md) for current setup
+> and approval requirements; the status statements below describe the earlier review.
+
 Reviewed 2026-10-22. No GitHub repository, Vercel project, Supabase project,
 or other external resource has been created or connected.
 

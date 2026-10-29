@@ -3,6 +3,10 @@
 Minimal local service: MQTT sensor messages → validation → SQLite → Flask JSON API.
 The included publisher generates **simulated** data; it does not read the RT-Spark.
 
+An optional outbound cloud sync worker is in `cloud_sync.py`. It reads the
+local database without changing MQTT, Flask, or historical records. It is not
+configured or started by default. See [Phase 12 setup](../PHASE12_REMOTE_MONITORING.md).
+
 ## Message format
 
 Topic: `lab3/sensors/motion`

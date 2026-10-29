@@ -2,6 +2,11 @@
 
 A read-only, responsive frontend for the BCA152 Lab 3 RT-Spark activity-monitoring system. Next.js runs on the laptop and reads the existing Flask API. The STM32 publishes measurements through MQTT to Flask; the browser does not talk to MQTT or SQLite.
 
+Phase 12 adds a separate, owner-authenticated cloud mode. It is locally tested
+but not provisioned or deployed. The existing local Flask mode remains the
+default. See [Phase 12 setup](../PHASE12_REMOTE_MONITORING.md); the Vercel
+frontend instructions below describe the earlier frontend-only deployment.
+
 ## Stack and prerequisites
 
 - Next.js App Router, React, TypeScript, Tailwind CSS, npm

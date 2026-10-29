@@ -4,6 +4,11 @@ An undergraduate IoT project that reads motion from an RT-Spark board, sends
 sensor messages over Wi-Fi and MQTT, stores them in a local backend, and shows
 sensor and experimental activity information in a responsive web dashboard.
 
+Phase 12 adds an **unprovisioned, locally tested** outbound cloud mirror and
+authenticated dashboard mode. The existing Vercel deployment remains on its
+prior frontend version. See [Phase 12 remote monitoring setup](PHASE12_REMOTE_MONITORING.md)
+for the approval boundary and steps to test genuine Android live monitoring.
+
 ## Objectives
 
 The laboratory work combines embedded firmware, Wi-Fi/MQTT communication, a
