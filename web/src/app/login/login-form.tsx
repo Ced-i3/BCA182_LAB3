@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { browserClient } from "@/lib/cloud/browser";
+import { loginMessage } from "@/lib/cloud/login-message";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ export function LoginForm() {
     const { error } = await browserClient().auth.signInWithOtp({
       email, options: { emailRedirectTo: `${window.location.origin}/auth/callback`, shouldCreateUser: false },
     });
-    setMessage(error ? "Could not send a sign-in link. Try again later." : "Check your email for a sign-in link.");
+    setMessage(loginMessage(error));
     setBusy(false);
   }
   return <main className="mx-auto flex min-h-screen max-w-md items-center px-4">
