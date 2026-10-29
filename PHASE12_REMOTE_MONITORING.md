@@ -1,8 +1,16 @@
 # Phase 12 remote monitoring setup
 
-**Status:** local implementation and mock tests only. No Supabase project, migration,
-secret, production setting, cloud write, STM32 live run, or Android test was
-performed in this phase. The existing Vercel site remains on its prior deployment.
+**Current provisioning status (2026-10-29):** The existing Supabase Free project
+`tpmkknpdvbawulbdaorj` has migration `202610290001_cloud_monitoring` applied.
+All four application tables have RLS enabled, authenticated owner-only SELECT
+policies, and no anonymous table grants. The owner invitation is pending email
+confirmation. Local development credentials are stored only in Git-ignored
+environment files. No production Vercel settings, cloud sensor writes, STM32
+live run, or Android test have been completed. The existing Vercel deployment
+remains in service.
+
+**Original Phase 12 result:** local implementation and mock tests only. Cloud
+provisioning was performed later under Phase 12C and 12D authorization.
 
 ## Data path and contracts
 
