@@ -3,16 +3,40 @@
 **Current provisioning status (2026-10-29):** The existing Supabase Free project
 `tpmkknpdvbawulbdaorj` has migration `202610290001_cloud_monitoring` applied.
 All four application tables have RLS enabled, authenticated owner-only SELECT
-policies, and no anonymous table grants. The owner invitation is pending email
-confirmation. Local development credentials are stored only in Git-ignored
-environment files. No production Vercel settings, cloud sensor writes, STM32
-live run, or Android test have been completed. The existing Vercel deployment
-remains in service.
+policies, and no anonymous table grants. The verified owner owns the enabled
+`rt-spark-001` device. Public sign-up is disabled, email sign-in remains enabled,
+and the owner signed in to the protected Vercel Preview. Local development
+credentials are stored only in Git-ignored environment files. Preview-only
+Vercel variables are configured; production variables and the existing
+production deployment remain unchanged. No genuine STM32 cloud stream or
+Android mobile-data test has been completed.
 
 **Original Phase 12 result:** local implementation and mock tests only. Cloud
 provisioning was performed later under Phase 12C and 12D authorization.
 
 ## Data path and contracts
+
+### Phase 12D live checks
+
+An isolated, temporary unrelated Auth user signed in and saw no owner device;
+its direct table write and an anonymous read were denied. The test user was
+removed. An isolated sensor/prediction batch was uploaded twice through the
+local Next.js ingest route and stored once with the registered owner and source
+timestamps; those test rows were removed. A disposable SQLite fixture tested
+the real cloud sync worker's first-run history fence, failed HTTPS outbox
+retention, and restart recovery against a protected Vercel Preview. For the
+successful Preview request, the worker used a test sender backed by the
+official `vercel curl` protection bypass. The production worker's built-in
+HTTPS sender has not yet completed a successful Vercel request. All cloud test
+rows were removed, and the historical laptop SQLite database was not opened.
+
+Supabase CLI 2.122.0 maps `[auth.email] enable_signup = false` to disabling the
+email provider on the hosted project. Keep `[auth] enable_signup = false` and
+the email provider enabled so existing users can sign in. The Auth settings
+endpoint confirmed that sign-up is blocked and email is enabled. The security
+advisor reports a leaked-password-protection warning; Supabase documents that
+feature as Pro-only, so it was not enabled on this Free project. The dashboard
+uses passwordless email links.
 
 The STM32 still sends its established 5 Hz MQTT payload to the laptop. Flask
 still stores every accepted reading and experimental prediction in the local
