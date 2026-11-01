@@ -4,10 +4,12 @@ An undergraduate IoT project that reads motion from an RT-Spark board, sends
 sensor messages over Wi-Fi and MQTT, stores them in a local backend, and shows
 sensor and experimental activity information in a responsive web dashboard.
 
-Phase 12 adds an **unprovisioned, locally tested** outbound cloud mirror and
-authenticated dashboard mode. The existing Vercel deployment remains on its
-prior frontend version. See [Phase 12 remote monitoring setup](PHASE12_REMOTE_MONITORING.md)
-for the approval boundary and steps to test genuine Android live monitoring.
+The [production dashboard](https://bca182-lab3.vercel.app) is public and
+read-only, with no viewer login. An authenticated HTTPS worker mirrors local
+readings and experimental predictions to Supabase for the Vercel dashboard.
+Real RT-Spark data reached the cloud in the reported October 29, 2026 demo.
+See [STM32 setup](STM32_SETUP.md), [remote monitoring](PHASE12_REMOTE_MONITORING.md),
+and [validation](VALIDATION.md) for operation, evidence, and limitations.
 
 ## Objectives
 
@@ -20,20 +22,24 @@ deployment differences are explained below.
 ## System architecture
 
 ```text
-RT-Spark / ICM20608
-        │ Wi-Fi, MQTT QoS 1
-        ▼
-Laptop MQTT broker ──► Flask MQTT subscriber ──► SQLite
-                              │                     │
-                              └─ inference worker   └─ read-only REST API
-                                                            │
-                                             Next.js dashboard on laptop
+RT-Spark / ICM20608 ── RW007 Wi-Fi / MQTT ──► laptop aMQTT broker
+                                                    │
+                                      Flask subscriber + classifier
+                                                    │
+                                                  SQLite
+                                                    │
+                               authenticated HTTPS cloud-sync worker
+                                                    │
+                                                 Supabase
+                                                    │
+                               Vercel public read-only dashboard
 ```
 
-The broker, Flask API and subscriber, inference worker, and SQLite database
-run on the laptop. The dashboard reads the Flask API through its Next.js
-server-side proxy. The website does not publish MQTT messages or modify
-database records.
+The broker, Flask API and subscriber, inference worker, SQLite, and cloud-sync
+worker run on the laptop. The cloud worker sends to a token-protected Vercel
+ingest route, which writes to Supabase. A fixed-device server-side route serves
+the public dashboard. The dashboard does not publish MQTT messages or modify
+database records. A separate local dashboard mode uses the Flask API proxy.
 
 ## Hardware requirements
 
@@ -61,8 +67,12 @@ examples. This project uses the ICM20608 and RW007 fitted to the RT-Spark.
 ```text
 AGENTS.md                         Project-specific development instructions
 README.md                         Project overview and local setup
+STM32_SETUP.md                    Board connection and streaming procedure
+PHASE12_REMOTE_MONITORING.md      Cloud operation and security
+VALIDATION.md                     Recorded tests and limitations
 backend/
   app.py                          Flask API, MQTT subscriber, DB startup
+  cloud_sync.py                   Authenticated outbound cloud-sync worker
   activity_recognition.py         Experimental idle/model inference
   inference_service.py            Bounded background inference worker
   broker.example.yaml             Example private-LAN broker configuration
@@ -74,18 +84,18 @@ backend/
 firmware/project-source/          Pinned dependency manifest, patches, overlays,
                                   and reconstruction instructions for publication
 firmware/rt-thread/               Known-working local RT-Thread checkout; excluded
-                                  from the proposed public Git repository
+                                  from the Git repository
 web/
   src/app/                         Next.js dashboard and read-only API proxy
   package.json, package-lock.json  Reproducible frontend dependencies
 ```
 
 The working RT-Thread and `rw007-download/` directories remain intact locally
-but are excluded from the proposed public repository. The small
+but are excluded from the repository. The small
 [`firmware/project-source/`](firmware/project-source/README.md) package pins
 their upstream commits and preserves the project-specific changes without
 copying either nested Git history.
-See [PUBLICATION_PLAN.md](PUBLICATION_PLAN.md) for the proposed Git staging
+See [PUBLICATION_PLAN.md](PUBLICATION_PLAN.md) for the historical Git staging
 allowlist and excluded third-party materials.
 
 ## Prerequisites and quick start
@@ -159,6 +169,10 @@ the board's MQTT stream.
 - The Flask API and responsive Next.js dashboard expose sensor readings,
   activity history, and backend/inference state. Current activity is not
   shown when the API says its prediction is stale or unavailable.
+- On October 29, 2026, a physical STM32-to-cloud demonstration was reported.
+  The subsequently confirmed Supabase totals were 4,859 readings and 4,856
+  predictions; the latest recorded sync was about 9:13 PM Philippine time.
+  See [validation](VALIDATION.md) for the scope of that evidence.
 
 These transport and storage tests do **not** validate walking/running model
 accuracy. Activity outputs are experimental. The prior movement checks did
@@ -401,16 +415,17 @@ accuracy or portability to other boards and networks.
 
 ## Deployment
 
-The intended Vercel project root is `web/`, with `main` as the production
-branch after a GitHub repository is created. Only the Next.js frontend is
-planned for Vercel. A Vercel server cannot reach `127.0.0.1` on this laptop;
-without a separately authorized hosted or private API design, a deployed page
-will correctly show the backend as unavailable. No tunnel, public Flask
-listener, or public MQTT listener is configured by this project.
+The [Vercel production dashboard](https://bca182-lab3.vercel.app) serves a
+public read-only view of the configured device without viewer login. The
+laptop worker sends data over authenticated HTTPS to the Vercel ingest route,
+which stores it in Supabase; the server-side monitor route supplies a bounded
+public snapshot. The laptop must be online and the broker, Flask, cloud-sync
+worker, and STM32 stream running for fresh readings. Historical readings can
+remain visible while the system is offline.
 
-See [Vercel deployment and remote monitoring readiness](REMOTE_MONITORING_PLAN.md)
-for the verified Vercel settings, pending GitHub/Vercel steps, and a secure
-cloud-sync design that keeps Flask, MQTT, and SQLite local.
+See [Phase 12 remote monitoring](PHASE12_REMOTE_MONITORING.md) for startup,
+security, backlog handling, and rollback. No public Flask or MQTT listener or
+tunnel is needed.
 
 ### Deployment Limitations — Local Server Instead of Cloud Hosting
 
@@ -426,16 +441,12 @@ application.
 We therefore run the MQTT broker, Flask API and subscriber, activity
 classifier, and SQLite database on a laptop. The STM32 reaches that laptop
 through Wi-Fi on the local network. This setup has demonstrated the complete
-sensor-to-dashboard data path for the tested configuration, but it is not a
-cloud deployment and does not fully meet the guide's cloud-hosting proposal.
-The laptop must remain powered on and the local services must be running for
-the backend to function. The local MQTT broker and API are not automatically
-accessible over the public internet and must not be exposed for this demo.
-
-The planned Vercel deployment will host only the Next.js frontend, not Flask,
-MQTT, the classifier, or SQLite. A public Vercel site cannot reach a backend
-bound to the laptop's localhost. Cloud backend hosting remains possible future
-work, subject to suitable access, security, and resources.
+sensor-to-dashboard path for the tested configuration. Supabase and Vercel
+provide the cloud mirror and public view, while MQTT, inference, and SQLite
+remain on the laptop. This differs from the guide's cloud-hosted broker and
+classifier and its mobile-app design. The responsive website is not a native
+Android application; instructor acceptance of these substitutions is not
+assumed. The local MQTT broker and API must not be exposed to the internet.
 
 ## Known limitations
 
@@ -483,8 +494,7 @@ work, subject to suitable access, security, and resources.
   remaining third-party source and dataset publication rights.
 - Consider authenticated, TLS-protected MQTT and API transport only as a
   separately planned project phase.
-- If a reachable backend is later provisioned, design Vercel authentication
-  and API access before deployment.
+- Review access requirements before using the public demo for any private data.
 
 ## Credits and third-party licenses
 

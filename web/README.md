@@ -1,11 +1,11 @@
 # Activity Monitor web dashboard
 
-A read-only, responsive frontend for the BCA152 Lab 3 RT-Spark activity-monitoring system. Next.js runs on the laptop and reads the existing Flask API. The STM32 publishes measurements through MQTT to Flask; the browser does not talk to MQTT or SQLite.
+A read-only, responsive frontend for the BCA152 Lab 3 RT-Spark activity-monitoring system. The local mode reads Flask through a Next.js proxy. The cloud mode reads a fixed-device Supabase snapshot through a server-side route; the browser does not talk to MQTT or SQLite.
 
-Phase 12 adds a separate, owner-authenticated cloud mode. It is locally tested
-but not provisioned or deployed. The existing local Flask mode remains the
-default. See [Phase 12 setup](../PHASE12_REMOTE_MONITORING.md); the Vercel
-frontend instructions below describe the earlier frontend-only deployment.
+The [production dashboard](https://bca182-lab3.vercel.app) is deployed as a
+public read-only demo without viewer login. See [Phase 12 setup](../PHASE12_REMOTE_MONITORING.md)
+for the authenticated cloud-sync path and operation. The local Flask mode
+remains available; the older frontend-only deployment notes below are historical.
 
 ## Stack and prerequisites
 
@@ -94,14 +94,15 @@ All predictions are experimental. The walking/running Decision Tree was trained 
 - **PowerShell refuses `npm`:** use `npm.cmd` as shown above.
 - **npm reports `ENOTCACHED` or a refused `127.0.0.1:9` proxy:** this terminal may have process-level offline or proxy settings. Check your network access, then override only that PowerShell session if appropriate; do not change global npm or Windows security settings. For example, `$env:NPM_CONFIG_OFFLINE='false'` disables npm's offline mode for the current terminal.
 
-## Vercel frontend deployment
+## Historical frontend-only Vercel deployment notes
 
-Vercel will host this Next.js frontend only. The local Flask API, MQTT broker,
-classifier, and SQLite database stay on the laptop. The existing proxy is
-same-origin, read-only, and allowlists five API paths. It cannot reach the
-laptop through `127.0.0.1` from a Vercel function.
+The following describes the earlier frontend-only configuration and is not
+the current cloud deployment procedure. The local Flask API, MQTT broker,
+classifier, and SQLite database still run on the laptop. The local proxy is
+same-origin, read-only, and allowlists five API paths; a Vercel function cannot
+reach the laptop through `127.0.0.1`.
 
-### Verified project settings
+### Previously verified project settings
 
 - **Root Directory:** `web` (the app and `package-lock.json` are here).
 - **Framework Preset:** Next.js, detected automatically.
@@ -128,7 +129,11 @@ fresh, stale, history, refresh, and backend-unavailable states were checked.
 The live and stale readings in that browser pass were isolated test fixtures,
 not physical sensor data.
 
-### Import and deploy after approval
+### Historical import and deployment procedure
+
+These steps describe the earlier private-repository, frontend-only setup. The
+repository and production deployment already exist; use the current Phase 12
+guide for the cloud configuration and do not repeat these steps as setup.
 
 1. Authenticate GitHub CLI with `gh auth login -h github.com -p https --web`.
 2. Create the private `BCA182_LAB3` repository from this checkout and push
@@ -153,5 +158,5 @@ before creating the project.
 Never point this frontend at the laptop's localhost, expose Flask or MQTT to
 the public internet, or use a tunnel as the backend path. Do not put secrets in
 source, `.env.example`, browser code, or `NEXT_PUBLIC_` variables. See the
-project-root [remote monitoring plan](../REMOTE_MONITORING_PLAN.md) for the
-proposed authenticated cloud synchronization design and exact resources.
+project-root [Phase 12 guide](../PHASE12_REMOTE_MONITORING.md) for the current
+authenticated cloud synchronization design and operation.

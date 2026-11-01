@@ -1,8 +1,9 @@
 # Phase 12 remote monitoring setup
 
-## Temporary public university demo (current implementation)
+## Current implementation: public university demo
 
-The cloud dashboard at the existing Vercel project opens without a viewer login
+The [original Vercel production dashboard](https://bca182-lab3.vercel.app)
+is deployed and opens without a viewer login
 when `CLOUD_MONITOR_MODE=cloud`. `GET /api/cloud/monitor` publicly returns a
 bounded, read-only snapshot for the single enabled `rt-spark-001` device. The
 server queries only approved sensor, prediction, and heartbeat columns using a
@@ -18,7 +19,9 @@ viewers can see the six sensor axes, activity predictions, status, and times for
 this device. Do not use this mode for private monitoring. Supabase Auth may
 remain configured, but the demo website no longer sends magic links or uses
 viewer sessions. The older owner-login deployment notes below describe the
-previous private mode and do not apply to this temporary demo build.
+previous private mode and do not apply to the current demo build. On October
+29, 2026, real STM32 sensor data was reported to have reached the cloud.
+See [validation](VALIDATION.md) for the recorded counts and their limitations.
 
 Production needs only `CLOUD_MONITOR_MODE=cloud`, `SUPABASE_URL`,
 `SUPABASE_SECRET_KEY`, and `CLOUD_INGEST_TOKEN_HASHES` as Vercel server-side
@@ -53,31 +56,32 @@ reachable broker IP with `mqtt_config set broker HOST`, then run
 Vercel URL on Android with Wi-Fi off. Verify fresh timestamps, six axes,
 prediction history, and a current activity only while the stream is fresh.
 
-After the demo, stop `mqtt_stream`, stop the sync worker, and use Vercel Instant
-Rollback to restore the previous production deployment. Remove the production
-cloud environment values, rotate the ingest token, and only then consider
-deleting the temporary Supabase project through its official dashboard after
-exporting any cloud data needed. Project deletion is irreversible; it does not
-delete local SQLite history. Leave the GitHub repository private. No automatic
-cloud-data deletion is enabled.
+After a demo, stop `mqtt_stream` and the sync worker. If the owner decides to
+retire the demo, review rollback and backups, remove the production cloud
+environment values after the route is retired, and rotate the ingest token.
+Review ownership before changing hosted resources. Preserve cloud data and
+local SQLite and sync state. No automatic cloud-data deletion is enabled.
 
-**Current provisioning status (2026-10-29):** The existing Supabase Free project
-`tpmkknpdvbawulbdaorj` has migration `202610290001_cloud_monitoring` applied.
-All four application tables have RLS enabled, authenticated owner-only SELECT
-policies, and no anonymous table grants. The verified owner owns the enabled
-`rt-spark-001` device. Public sign-up is disabled, email sign-in remains enabled,
+### Historical provisioning status (earlier on 2026-10-29)
+
+At the time of the preview checks, the existing Supabase Free project
+had migration `202610290001_cloud_monitoring` applied. All four application
+tables had RLS enabled, authenticated owner-only SELECT policies, and no
+anonymous table grants. The verified owner owned the enabled `rt-spark-001`
+device. Public sign-up was disabled, email sign-in remained enabled,
 and the owner signed in to the protected Vercel Preview. Local development
-credentials are stored only in Git-ignored environment files. Preview-only
-Vercel variables are configured; production variables and the existing
-production deployment remain unchanged. No genuine STM32 cloud stream or
-Android mobile-data test has been completed.
+credentials were stored only in Git-ignored environment files. Preview-only
+Vercel variables were configured; production variables and the existing
+production deployment remained unchanged. No genuine STM32 cloud stream or
+Android mobile-data test had been completed. These statements describe that
+earlier preview, before the reported production hardware-to-cloud demonstration.
 
 **Original Phase 12 result:** local implementation and mock tests only. Cloud
 provisioning was performed later under Phase 12C and 12D authorization.
 
 ## Data path and contracts
 
-### Phase 12D live checks
+### Historical Phase 12D live checks (2026-10-29 preview)
 
 An isolated, temporary unrelated Auth user signed in and saw no owner device;
 its direct table write and an anonymous read were denied. The test user was
@@ -88,16 +92,17 @@ the real cloud sync worker's first-run history fence, failed HTTPS outbox
 retention, and restart recovery against a protected Vercel Preview. For the
 successful Preview request, the worker used a test sender backed by the
 official `vercel curl` protection bypass. The production worker's built-in
-HTTPS sender has not yet completed a successful Vercel request. All cloud test
-rows were removed, and the historical laptop SQLite database was not opened.
+HTTPS sender had not yet completed a successful Vercel request at that stage.
+All cloud test rows were removed, and the historical laptop SQLite database
+was not opened.
 
 Supabase CLI 2.122.0 maps `[auth.email] enable_signup = false` to disabling the
 email provider on the hosted project. Keep `[auth] enable_signup = false` and
 the email provider enabled so existing users can sign in. The Auth settings
 endpoint confirmed that sign-up is blocked and email is enabled. The security
 advisor reports a leaked-password-protection warning; Supabase documents that
-feature as Pro-only, so it was not enabled on this Free project. The dashboard
-uses passwordless email links.
+feature as Pro-only, so it was not enabled on this Free project. That preview
+used passwordless email links; the current public demo does not use viewer login.
 
 The STM32 still sends its established 5 Hz MQTT payload to the laptop. Flask
 still stores every accepted reading and experimental prediction in the local
@@ -115,16 +120,18 @@ key makes retries safe. `last_successful_sync_at` is set only after all row
 writes succeed. The source `timestamp`, SQLite `received_at`, prediction
 window times, and `created_at` remain distinct from cloud receipt time.
 
-The cloud dashboard uses one owner-authenticated snapshot request every five
+The current public dashboard requests a fixed-device snapshot every five
 seconds. It reuses the existing cards and response contracts. Freshness uses
 local receive and prediction times, the backend observation, and successful
 cloud sync time. Stored readings remain historical when any of those age out.
 The initial thresholds are 15 seconds for sensor/prediction freshness and 20
 seconds for heartbeat/sync; validate these in a real network trial.
 
-## Approval boundary and external setup
+## Historical provisioning and external setup
 
-These operations require the owner's explicit approval before execution:
+The following describes the earlier provisioning workflow, not steps needed
+for an already configured deployment. Further changes to hosted resources
+require the owner's authorization:
 
 1. Create one Supabase Free project in an agreed region. Payment information
    is generally not needed for Free, subject to the current account and plan.
@@ -138,13 +145,10 @@ These operations require the owner's explicit approval before execution:
    stable `device_id` and the owner user's Auth UUID. This SQL is not applied
    by the local build. Test RLS with an owner, a second user, and anon before
    sending any genuine readings.
-4. Configure Vercel production environment values: `CLOUD_MONITOR_MODE=cloud`,
-   `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
-   `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `CLOUD_INGEST_TOKEN_HASHES`.
-   Only the publishable URL/key have `NEXT_PUBLIC_` prefixes. Keep the secret
-   key in server-only Vercel settings. Leave `BACKEND_URL` unset. Changing
-   these values and deploying this code changes the public site from the
-   disconnected dashboard to a sign-in page, so coordinate deployment.
+4. For the current public demo, configure `CLOUD_MONITOR_MODE=cloud`,
+   `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `CLOUD_INGEST_TOKEN_HASHES`
+   as server-side Vercel values. Keep privileged values out of `NEXT_PUBLIC_`
+   variables and leave `BACKEND_URL` unset. Coordinate any deployment change.
 5. Configure the laptop process with the values in `backend/.env.example`.
    Store actual values in a private environment file or OS secret store,
    outside Git. Start the worker only after the approved cloud route is live.
@@ -199,42 +203,28 @@ when Flask cannot be reached.
 
 The migration enables RLS on all four exposed tables. Only `authenticated`
 gets `SELECT`, restricted by `auth.uid() = owner_id`; `anon` has no table grants
-and no read policy. Browser/SSR reads use a publishable key and verified user
-claims, then explicitly select only that owner's registered device. Users get
-no write grants. The ingest route alone uses the server-only secret key, which
-bypasses RLS after it has matched the dedicated token to a registered enabled
-device and server-resolved owner. Every batch has at most 25 events and 64 KiB.
+and no read policy. Users get no write grants. The server-side public monitor
+route uses a privileged key to read only the fixed enabled demo device and
+returns a bounded snapshot without exposing the key. The ingest route also
+uses the server-only secret key, which bypasses RLS after it has matched the
+dedicated token to a registered enabled device and server-resolved owner.
+Every batch has at most 25 events and 64 KiB.
 Credential failures return 401, device mismatch 403, malformed input 400,
 oversize 413, and cloud storage failure 503 for retry.
 
-**Seven-day cloud mirror target:** keep seven days by source/local receive
-time after measuring actual Postgres storage and confirming recovery needs.
-No automatic deletion, cron task, or retention migration is enabled. Once
-approved, a separately reviewed maintenance job can delete old mirrored
-sensor and prediction rows in bounded batches. Never apply that cleanup to
-local SQLite. If delayed uploads exceed the retention window, decide whether
-to archive, reject, or briefly retain them before enabling any cleanup.
+**Seven-day cloud mirror target:** review retention against actual Postgres
+storage and recovery needs. No automatic deletion, cron task, or retention
+migration is enabled. Preserve local SQLite and cloud data while retention is
+reviewed separately, including how delayed uploads should be handled.
 
-## Verification before claiming live Android monitoring
+## Further validation
 
-1. Apply the migration in the approved Supabase project. Register the device
-   with the correct owner UUID and confirm anon/other-user reads and all user
-   writes fail; confirm owner reads work. Review grants and policies in the
-   dashboard. No live RLS check was possible without a project.
-2. Deploy the completed commit to the existing Vercel project only after
-   production settings are approved. Check signed-out redirects, email link
-   sign-in, expiry/refresh, logout, owner access, and other-user denial.
-3. Run the existing local broker and Flask service, then the sync worker.
-   Start the STM32 stream manually after Wi-Fi and synchronized time are
-   available. Check the worker's outbox falls, cloud event IDs remain unique,
-   source timestamps match SQLite, and history updates without duplicate rows.
-4. Open the Vercel HTTPS URL on Android with Wi-Fi **off** and mobile data on.
-   Verify six axes, prediction history, last sync time, and all stale/offline
-   states by controlled disconnection and reconnection. Record latency and
-   label any walking/running trials; classifier accuracy remains experimental.
-
-Until these steps pass, the cloud code is a locally tested integration, not a
-verified working remote monitor.
+The reported October 29 physical stream demonstrates cloud delivery, not
+classification accuracy. For a further remote test, start the local services
+and board as above, check that the outbox drains and timestamps and event IDs
+match, then inspect the public dashboard from Android mobile data. Record
+latency and stale/offline behavior under controlled disconnection. Labelled
+walking/running trials and independent model evaluation remain outstanding.
 
 ## Production rollback
 

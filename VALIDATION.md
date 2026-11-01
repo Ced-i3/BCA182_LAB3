@@ -4,7 +4,22 @@ This record separates automated checks run in this checkout from earlier
 firmware and physical data-flow results. Software tests do not establish
 walking/running accuracy or validate hardware behavior.
 
-## Automated checks run in this checkout
+## Reported physical hardware-to-cloud demonstration (2026-10-29)
+
+The project owner reports that genuine RT-Spark ICM20608 readings reached
+Supabase through the laptop MQTT broker, Flask/SQLite, authenticated HTTPS
+cloud-sync worker, and Vercel ingest route on October 29, 2026. Supabase was
+subsequently reported to contain 4,859 sensor readings and 4,856 activity
+predictions, with the latest recorded sync at approximately 9:13 PM Philippine
+time (UTC+8) on October 29. These are recorded totals, not a claimed count of
+messages from a single run. They were supplied for this documentation update;
+the database and demonstration were not independently rechecked during it.
+
+This demonstrates the reported data path, not the correctness of activity
+labels. The public read-only Vercel website does not require viewer login.
+Fresh data still requires the board stream and laptop services to be running.
+
+## Previously recorded automated software checks (2026-10-20)
 
 On 2026-10-20, after the frontend proxy regression tests were added:
 
@@ -24,7 +39,7 @@ and worker error-path coverage. The frontend production build compiled the
 Next.js API proxy; the proxy tests invoke it with isolated environment and
 network stubs. No Vercel deployment or hardware test was run in this phase.
 
-## Previously recorded verification
+## Previously recorded firmware and physical verification
 
 These results are retained from earlier project phases and were not rerun as
 part of this documentation and frontend-test update:
@@ -44,6 +59,10 @@ part of this documentation and frontend-test update:
   corrected-model loading, empty SQLite initialization, and the five Flask
   API endpoints. This phase adds four frontend proxy tests; its current test
   totals are listed above.
+- Phase 12D preview security checks included owner/other-user isolation,
+  anonymous read and user-write denial, ingest deduplication, and a disposable
+  cloud-sync fixture. These were historical checks, not rerun for this update;
+  see [Phase 12](PHASE12_REMOTE_MONITORING.md#historical-phase-12d-live-checks-2026-10-29-preview).
 
 These are historical checks for the recorded machine, dependency set, board,
 and local network. They are not new measurements from this phase.
@@ -89,16 +108,14 @@ and build reproduction steps are in
 [`firmware/project-source/README.md`](firmware/project-source/README.md);
 they require the pinned dependencies and compatible ARM GCC/SCons tools.
 
-## Not fully validated
+## Unperformed scientific validation and remaining limitations
 
 - Real-world walking/running accuracy on RT-Spark hardware. The model remains
   experimental and has not been evaluated on controlled, labelled trials.
-- A cloud-hosted Flask, MQTT, classifier, or SQLite backend. The project uses
-  a laptop-hosted backend and does not meet the laboratory guide's cloud
-  backend requirement.
-- Independent Vercel access to laptop data. Vercel is prepared for the
-  frontend only; without an approved, reachable backend, production requests
-  return unavailable responses and the dashboard stays disconnected.
+- The laboratory's proposed cloud-hosted MQTT broker and classifier and native
+  Android app. This implementation keeps the broker, classifier, Flask, and
+  SQLite on the laptop, mirrors data to Supabase, and uses a responsive website.
+  Instructor acceptance of these architectural substitutions is not assumed.
 - Fresh upstream dependency downloads and firmware reconstruction on an
   arbitrary external computer or hardware setup.
 - Hardware behavior after the latest software and documentation changes. No
@@ -114,19 +131,16 @@ the environment were changed or deleted. Use the separate-environment recovery
 procedure in [`backend/README.md`](backend/README.md) before starting the local
 broker from this moved checkout.
 
-## Deployment assumptions and next work
+## Deployment and next work
 
-The intended Vercel root is `web/`. Vercel hosts only Next.js; the backend
-stays local and `BACKEND_URL` is unset for that frontend-only configuration.
-Do not expose Flask or MQTT directly or point Vercel at the laptop's
-`127.0.0.1`. The root README's **Deployment Limitations — Local Server Instead
-of Cloud Hosting** section records why the local arrangement does not satisfy
-the cloud-hosting proposal. A hosted backend and its authentication remain
-future work; no cloud service or deployment has been created.
+The Vercel project root is `web/`. Its authenticated ingest route and
+fixed-device public monitor use Supabase; Flask, MQTT, inference, and SQLite
+remain local. Do not expose Flask or MQTT directly or point Vercel at the
+laptop's `127.0.0.1`. The [root README](README.md#deployment) explains the
+difference from the laboratory's cloud-hosting proposal.
 
 Next validation work is to collect labelled RT-Spark walking/running trials,
 verify the pinned firmware reconstruction on a clean computer, resolve the
-RW007 licensing annotation and the dataset redistribution terms, and plan a
-secure backend connection before any public dashboard deployment. The
+RW007 licensing annotation and the dataset redistribution terms. The
 model's accuracy must not be described as hardware-validated until that
 measurement work is complete.
